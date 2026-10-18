@@ -1,8 +1,11 @@
-const CACHE='lanefall-v1';
+// v3 — the page itself is fetched fresh when online, so updates show up right away
+const CACHE='lanefall-v3';
 const FILES=['./','index.html','three.min.js','manifest.webmanifest','icon-180.png','icon-192.png','icon-512.png'];
 self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>c.addAll(FILES)));self.skipWaiting()});
 self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(k=>Promise.all(k.filter(n=>n!==CACHE).map(n=>caches.delete(n)))));self.clients.claim()});
-self.addEventListener('fetch',e=>{if(e.request.method!=='GET')return;
-  e.respondWith(caches.match(e.request).then(hit=>hit||fetch(e.request).then(res=>{
-    if(res.ok&&(e.request.url.startsWith(self.location.origin)||e.request.url.includes('fonts.g'))){const copy=res.clone();caches.open(CACHE).then(c=>c.put(e.request,copy))}
-    return res}).catch(()=>caches.match('index.html'))))});
+self.addEventListener('fetch',e=>{const r=e.request;if(r.method!=='GET')return;
+  const page=r.mode==='navigate'||r.url.endsWith('/index.html')||r.url.endsWith('/');
+  if(page){e.respondWith(fetch(r).then(res=>{const c=res.clone();caches.open(CACHE).then(x=>x.put(r,c));return res}).catch(()=>caches.match(r).then(h=>h||caches.match('index.html'))));return}
+  e.respondWith(caches.match(r).then(hit=>hit||fetch(r).then(res=>{
+    if(res.ok&&(r.url.startsWith(self.location.origin)||r.url.includes('fonts.g'))){const c=res.clone();caches.open(CACHE).then(x=>x.put(r,c))}
+    return res})))});
