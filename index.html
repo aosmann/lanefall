@@ -375,46 +375,66 @@ function nearNums(c,offs,allowNeg){const s=new Set([c]),out=[];let g=0;
 const num=(q,c,offs,neg)=>({q:q+' = ?',c:String(c),w:nearNums(c,offs,neg)});
 
 /* ---- English ---- */
-const VERBS=[["go","went","gone","goen"],["eat","ate","eaten","eated"],["see","saw","seen","sawn"],["take","took","taken","tooken"],
- ["write","wrote","written","writ"],["buy","bought","bought","brought"],["bring","brought","brought","bought"],["think","thought","thought","thank"],
- ["catch","caught","caught","cought"],["teach","taught","taught","tought"],["swim","swam","swum","swimmed"],["drink","drank","drunk","drinked"],
- ["begin","began","begun","begon"],["break","broke","broken","braked"],["choose","chose","chosen","choosed"],["drive","drove","driven","drived"],
- ["fly","flew","flown","flied"],["forget","forgot","forgotten","forgetted"],["give","gave","given","gived"],["know","knew","known","knowed"],
- ["ride","rode","ridden","rided"],["speak","spoke","spoken","speaked"],["steal","stole","stolen","stealed"],["wear","wore","worn","weared"],
- ["fall","fell","fallen","falled"],["sing","sang","sung","singed"],["run","ran","run","runned"],["come","came","come","comed"],
- ["sleep","slept","slept","sleeped"],["leave","left","left","leaved"],["find","found","found","finded"],["feel","felt","felt","fell"]];
-const verbDeck=deck(VERBS);
-function irregular(){const [b,p,pp,trap]=verbDeck();const reg=b.endsWith('e')?b+'d':b+'ed';
-  if(Math.random()<.55){const w=pickN([reg,pp,trap,b],2,p);return{q:`Past simple of ${b.toUpperCase()}`,c:p,w}}
-  const w=pickN([reg,p,trap,b],2,pp);return{q:`Past participle of ${b.toUpperCase()}`,c:pp,w}}
-const tenses=fixed([
- ["She ___ to school every day","goes","is going","went"],["Look! It ___ outside","is raining","rains","rained"],
- ["I ___ him yesterday","saw","have seen","see"],["We ___ here since 2020","have lived","live","lived"],
- ["When I called, she ___ dinner","was cooking","cooks","has cooked"],["Water ___ at 100 °C","boils","is boiling","boiled"],
- ["Have you ever ___ sushi?","eaten","ate","eat"],["He ___ TV right now","is watching","watches","watched"],
- ["They ___ football last Sunday","played","play","have played"],["I've already ___ my homework","finished","finish","finishing"],
- ["By the time we arrived, the film ___","had started","starts","has started"],["She usually ___ coffee","drinks","is drinking","drank"],
- ["I ___ to Paris twice","have been","was","am"],["While I ___ home, it started to rain","was walking","walk","have walked"]]);
-const opposites=paired([["HOT","cold"],["BIG","small"],["UP","down"],["HAPPY","sad"],["FAST","slow"],["EARLY","late"],["FULL","empty"],
- ["HEAVY","light"],["STRONG","weak"],["RICH","poor"],["NOISY","quiet"],["YOUNG","old"],["CHEAP","expensive"],["ARRIVE","leave"],
- ["REMEMBER","forget"],["ALWAYS","never"],["WIN","lose"],["PUSH","pull"]],k=>`Opposite of ${k}`);
-const prepositions=fixed([
- ["She's good ___ maths","at","in","on"],["He's afraid ___ spiders","of","from","at"],["I'm interested ___ art","in","on","at"],
- ["She's married ___ a doctor","to","with","by"],["It depends ___ the weather","on","of","from"],["Proud ___ her son","of","on","for"],
- ["We arrived ___ the airport","at","to","on"],["I was born ___ 2010","in","on","at"],["See you ___ Monday","on","in","at"],
- ["Let's meet ___ 5 o'clock","at","in","on"],["I listen ___ music","to","at","for"],["We waited ___ the bus","for","to","on"],
- ["I'm tired ___ waiting","of","from","with"],["The book is ___ the table","on","at","of"]]);
-const spelling=(()=>{const d=deck([["necessary","neccessary","necesary"],["separate","seperate","separete"],["definitely","definately","definitly"],
- ["receive","recieve","receeve"],["tomorrow","tommorow","tomorow"],["beautiful","beatiful","beautifull"],["Wednesday","Wensday","Wednsday"],
- ["government","goverment","govermant"],["friend","freind","frend"],["because","becuase","becouse"],["different","diffrent","diferent"],
- ["library","libary","librery"],["address","adress","addres"],["believe","beleive","belive"]]);
- return()=>{const [c,a,b]=d();return{q:'Which is spelled right?',c,w:[a,b]}}})();
-const phrasal=fixed([
- ["To GIVE UP means…","quit","begin","return"],["To LOOK INTO means…","investigate","admire","avoid"],["To BRING UP a topic means…","mention","lift","hide"],
- ["To CUT DOWN ON means…","reduce","chop","raise"],["To PUT OFF a meeting means…","postpone","attend","cancel"],["To RUN OUT OF means…","have none left","escape","jog"],
- ["To LOOK AFTER means…","take care of","search for","follow"],["To TURN DOWN an offer means…","refuse","accept","repeat"],["To CARRY ON means…","continue","lift","stop"],
- ["To SET OFF on a trip means…","leave","arrive","pack"],["To COME ACROSS means…","find by chance","cross over","arrive"],["To CALL OFF means…","cancel","phone","shout"],
- ["To GET ON WITH someone means…","be friendly","board","argue"]]);
+// every bank is split into three levels; LV() is the difficulty picked for the topic
+const byLv=(b,mk)=>{const d=[1,2,3].map(l=>mk(b[l],l));return()=>d[LV()-1]()};
+const fixedL=b=>byLv(b,list=>fixed(list));
+const pairedL=(b,fmt)=>byLv(b,list=>paired(list,fmt));
+const VERBS={1:[["go","went","gone","goed"],["eat","ate","eaten","eated"],["see","saw","seen","seed"],["come","came","come","comed"],["run","ran","run","runned"],
+  ["sleep","slept","slept","sleeped"],["find","found","found","finded"],["feel","felt","felt","fell"],["give","gave","given","gived"],["take","took","taken","taked"]],
+ 2:[["buy","bought","bought","brought"],["bring","brought","brought","bought"],["think","thought","thought","thank"],["catch","caught","caught","cought"],
+  ["teach","taught","taught","tought"],["write","wrote","written","writ"],["drink","drank","drunk","drinked"],["leave","left","left","leaved"],
+  ["know","knew","known","knowed"],["drive","drove","driven","drived"],["break","broke","broken","braked"],["speak","spoke","spoken","speaked"]],
+ 3:[["swim","swam","swum","swimmed"],["begin","began","begun","begon"],["choose","chose","chosen","choosed"],["fly","flew","flown","flied"],
+  ["forget","forgot","forgotten","forgetted"],["ride","rode","ridden","rided"],["steal","stole","stolen","stealed"],["wear","wore","worn","weared"],
+  ["seek","sought","sought","seeked"],["forbid","forbade","forbidden","forbidded"],["arise","arose","arisen","arised"],["freeze","froze","frozen","freezed"],
+  ["shake","shook","shaken","shaked"],["sing","sang","sung","singed"]]};
+const irregular=byLv(VERBS,(list,l)=>{const d=deck(list);return()=>{const [b,p,pp,trap]=d();const reg=b.endsWith('e')?b+'d':b+'ed';
+  if(Math.random()<[.8,.55,.35][l-1])return{q:`Past simple of ${b.toUpperCase()}`,c:p,w:pickN([reg,pp,trap,b],2,p)};
+  return{q:`Past participle of ${b.toUpperCase()}`,c:pp,w:pickN([reg,p,trap,b],2,pp)}}});
+const tenses=fixedL({1:[
+ ["She ___ to school every day","goes","is going","went"],["Look! It ___ outside","is raining","rains","rained"],["I ___ him yesterday","saw","see","have seen"],
+ ["They ___ football last Sunday","played","play","playing"],["He ___ TV right now","is watching","watches","watched"],["Water ___ at 100 °C","boils","is boiling","boiled"],
+ ["She usually ___ coffee","drinks","is drinking","drank"],["We ___ pizza last night","ate","eat","eating"],["Listen! The baby ___","is crying","cries","cried"],
+ ["My dad ___ in a bank","works","is work","working"]],
+ 2:[["We ___ here since 2020","have lived","live","lived"],["When I called, she ___ dinner","was cooking","cooks","has cooked"],["Have you ever ___ sushi?","eaten","ate","eat"],
+ ["I've already ___ my homework","finished","finish","finishing"],["I ___ to Paris twice","have been","was","am"],["While I ___ home, it started to rain","was walking","walk","have walked"],
+ ["I think it ___ tomorrow","will rain","rained","raining"],["She ___ her keys, so she can't get in","has lost","loses","is losing"],
+ ["They ___ TV when the lights went out","were watching","watched","watch"],["How long ___ you known her?","have","did","are"]],
+ 3:[["By the time we arrived, the film ___","had started","has started","starts"],["By next June, I ___ here for ten years","will have worked","will work","worked"],
+ ["If I ___ you, I'd apologise","were","am","will be"],["If it had rained, we ___ stayed in","would have","will have","had"],["The bridge ___ in 1890","was built","built","has built"],
+ ["She ___ for hours when he finally called","had been waiting","was waited","has waited"],["I wish I ___ more time","had","have","will have"],
+ ["He said he ___ tired","was","is being","will"],["Hardly ___ arrived when it rained","had he","he had","has he"],["If you heat ice, it ___","melts","would melt","melted"]]});
+const opposites=pairedL({1:[["HOT","cold"],["BIG","small"],["UP","down"],["HAPPY","sad"],["FAST","slow"],["FULL","empty"],["YOUNG","old"],["WIN","lose"],["PUSH","pull"],["OPEN","closed"],["DAY","night"],["WET","dry"]],
+ 2:[["EARLY","late"],["HEAVY","light"],["STRONG","weak"],["RICH","poor"],["NOISY","quiet"],["CHEAP","expensive"],["ARRIVE","leave"],["REMEMBER","forget"],["ALWAYS","never"],["BUY","sell"],["ACCEPT","refuse"],["DANGEROUS","safe"]],
+ 3:[["ANCIENT","modern"],["GENEROUS","selfish"],["ARTIFICIAL","natural"],["TEMPORARY","permanent"],["SCARCE","plentiful"],["VAGUE","precise"],["BRAVE","cowardly"],["MAXIMUM","minimum"],["INCREASE","decrease"],["FREQUENT","rare"],["GUILTY","innocent"],["EXPAND","shrink"]]},k=>`Opposite of ${k}`);
+const prepositions=fixedL({1:[
+ ["The book is ___ the table","on","at","of"],["See you ___ Monday","on","in","at"],["I was born ___ 2010","in","on","at"],["Let's meet ___ 5 o'clock","at","in","on"],
+ ["The cat is ___ the box","in","at","to"],["I go to school ___ bus","by","with","on"],["We live ___ Romania","in","at","on"],["I listen ___ music","to","at","for"],
+ ["Wait ___ me!","for","to","on"],["The ball is ___ the chair","under","at","of"]],
+ 2:[["She's good ___ maths","at","in","on"],["He's afraid ___ spiders","of","from","at"],["I'm interested ___ art","in","on","at"],["It depends ___ the weather","on","of","from"],
+ ["She's proud ___ her son","of","on","for"],["We arrived ___ the airport","at","to","on"],["I'm tired ___ waiting","of","from","with"],["Thank you ___ the gift","for","of","to"],
+ ["He's different ___ his brother","from","of","at"],["Who does this belong ___?","to","at","for"]],
+ 3:[["She's married ___ a doctor","to","with","by"],["He insisted ___ paying","on","for","to"],["She succeeded ___ passing","in","at","on"],["I'm not keen ___ horror films","on","of","for"],
+ ["He was accused ___ cheating","of","for","with"],["We congratulated her ___ winning","on","for","to"],["It's similar ___ mine","to","as","with"],
+ ["She's responsible ___ the team","for","of","on"],["I apologised ___ being late","for","of","to"],["He's capable ___ more","of","to","for"]]});
+const spelling=byLv({1:[["friend","freind","frend"],["because","becuase","becouse"],["beautiful","beatiful","beautifull"],["Wednesday","Wensday","Wednsday"],
+  ["tomorrow","tommorow","tomorow"],["people","peaple","poeple"],["school","shcool","scool"],["February","Febuary","Febraury"]],
+ 2:[["necessary","neccessary","necesary"],["separate","seperate","separete"],["different","diffrent","diferent"],["library","libary","librery"],
+  ["address","adress","addres"],["believe","beleive","belive"],["receive","recieve","receeve"],["definitely","definately","definitly"]],
+ 3:[["accommodate","accomodate","acommodate"],["embarrass","embarass","embarras"],["conscience","concience","consience"],["millennium","millenium","milennium"],
+  ["occurrence","occurence","ocurrence"],["rhythm","rythm","rhythym"],["questionnaire","questionaire","questionnair"],["liaison","liason","liasion"]]},
+ list=>{const d=deck(list);return()=>{const [c,a,b]=d();return{q:'Which is spelled right?',c,w:[a,b]}}});
+const phrasal=fixedL({1:[
+ ["To WAKE UP means to…","stop sleeping","eat","run"],["To SIT DOWN means to…","take a seat","stand","jump"],["To TURN ON a light means to…","switch it on","break it","paint it"],
+ ["To PUT ON a coat means to…","wear it","wash it","sell it"],["To LOOK FOR means to…","search","watch","avoid"],["To GET UP means to…","leave your bed","fall asleep","go out"],
+ ["To TAKE OFF shoes means to…","remove them","buy them","clean them"],["To COME BACK means to…","return","leave","arrive late"]],
+ 2:[["To GIVE UP means to…","quit","begin","return"],["To LOOK AFTER means to…","take care of","search for","follow"],["To CARRY ON means to…","continue","lift","stop"],
+ ["To CALL OFF means to…","cancel","phone","shout"],["To RUN OUT OF means to…","have none left","escape","jog"],["To FIND OUT means to…","discover","lose","hide"],
+ ["To PUT OFF a meeting means to…","postpone","attend","cancel"],["To GET ON WITH someone means to…","be friendly","board","argue"]],
+ 3:[["To LOOK INTO means to…","investigate","admire","avoid"],["To BRING UP a topic means to…","mention","lift","hide"],["To CUT DOWN ON means to…","reduce","chop","raise"],
+ ["To COME ACROSS means to…","find by chance","cross over","arrive"],["To TURN DOWN an offer means to…","refuse","accept","repeat"],["To SET OFF on a trip means to…","leave","arrive","pack"],
+ ["To PUT UP WITH means to…","tolerate","build","lift"],["To LOOK DOWN ON means to…","feel superior to","watch","respect"],["To MAKE UP a story means to…","invent","forgive","paint"],
+ ["To GET AWAY WITH means to…","escape punishment","leave early","steal"]]});
 
 /* ---- Math ---- */
 const LV=()=>DIFF();
@@ -437,16 +457,20 @@ const order=()=>{const L=LV(),a=ri_(2,[9,9,20][L-1]),b=ri_(2,[4,6,9][L-1]),d=ri_
   const c=(a+b)*d;return{q:`(${a} + ${b}) × ${d} = ?`,c:String(c),w:[String(a+b*d),String(c+d)]}};
 
 /* ---- Geography ---- */
-const euroCaps=paired([["Romania","Bucharest"],["France","Paris"],["Germany","Berlin","Munich"],["Italy","Rome","Milan"],["Spain","Madrid","Barcelona"],
- ["Portugal","Lisbon","Porto"],["Poland","Warsaw","Kraków"],["Hungary","Budapest"],["Austria","Vienna"],["Greece","Athens"],["Netherlands","Amsterdam","Rotterdam"],
- ["Belgium","Brussels"],["Sweden","Stockholm"],["Norway","Oslo"],["Finland","Helsinki"],["Denmark","Copenhagen"],["Ireland","Dublin"],["Czechia","Prague"],
- ["Bulgaria","Sofia"],["Serbia","Belgrade"],["Croatia","Zagreb"],["Ukraine","Kyiv"],["Switzerland","Bern","Zurich"],["Moldova","Chișinău"],["Slovakia","Bratislava"],
- ["Slovenia","Ljubljana"],["Estonia","Tallinn"],["Latvia","Riga"],["Lithuania","Vilnius"],["Iceland","Reykjavík"],["United Kingdom","London"]],k=>`Capital of ${k}`);
-const worldCaps=paired([["Japan","Tokyo","Osaka"],["China","Beijing","Shanghai"],["India","New Delhi","Mumbai"],["Australia","Canberra","Sydney"],
- ["Canada","Ottawa","Toronto"],["United States","Washington","New York"],["Brazil","Brasília","Rio de Janeiro"],["Argentina","Buenos Aires"],["Egypt","Cairo"],
- ["Kenya","Nairobi"],["South Korea","Seoul","Busan"],["Thailand","Bangkok"],["Turkey","Ankara","Istanbul"],["Mexico","Mexico City"],["Nigeria","Abuja","Lagos"],
- ["Morocco","Rabat","Casablanca"],["Vietnam","Hanoi","Ho Chi Minh City"],["Peru","Lima"],["Chile","Santiago"],["New Zealand","Wellington","Auckland"],
- ["Pakistan","Islamabad","Karachi"],["Saudi Arabia","Riyadh"]],k=>`Capital of ${k}`);
+const euroCaps=pairedL({1:[["France","Paris","Marseille"],["Germany","Berlin","Munich"],["Italy","Rome","Milan"],["Spain","Madrid","Barcelona"],["United Kingdom","London","Manchester"],
+  ["Romania","Bucharest","Cluj-Napoca"],["Greece","Athens","Thessaloniki"],["Portugal","Lisbon","Porto"],["Netherlands","Amsterdam","Rotterdam"],["Russia","Moscow","Saint Petersburg"]],
+ 2:[["Austria","Vienna","Salzburg"],["Hungary","Budapest"],["Poland","Warsaw","Kraków"],["Belgium","Brussels","Antwerp"],["Sweden","Stockholm"],["Norway","Oslo"],
+  ["Denmark","Copenhagen"],["Ireland","Dublin","Cork"],["Czechia","Prague"],["Finland","Helsinki"],["Switzerland","Bern","Zurich"],["Ukraine","Kyiv","Odesa"]],
+ 3:[["Bulgaria","Sofia"],["Serbia","Belgrade"],["Croatia","Zagreb","Split"],["Moldova","Chișinău"],["Slovakia","Bratislava"],["Slovenia","Ljubljana"],["Estonia","Tallinn"],
+  ["Latvia","Riga"],["Lithuania","Vilnius","Kaunas"],["Iceland","Reykjavík"],["Albania","Tirana"],["North Macedonia","Skopje"],["Montenegro","Podgorica"],["Malta","Valletta"],
+  ["Bosnia and Herzegovina","Sarajevo"]]},k=>`Capital of ${k}`);
+const worldCaps=pairedL({1:[["Japan","Tokyo","Osaka"],["China","Beijing","Shanghai"],["United States","Washington","New York"],["Canada","Ottawa","Toronto"],["Egypt","Cairo","Alexandria"],
+  ["Mexico","Mexico City","Cancún"],["Argentina","Buenos Aires"],["South Korea","Seoul","Busan"],["Thailand","Bangkok","Phuket"],["India","New Delhi","Mumbai"]],
+ 2:[["Australia","Canberra","Sydney"],["Brazil","Brasília","Rio de Janeiro"],["Turkey","Ankara","Istanbul"],["Kenya","Nairobi","Mombasa"],["Peru","Lima"],["Chile","Santiago"],
+  ["Vietnam","Hanoi","Ho Chi Minh City"],["Saudi Arabia","Riyadh","Jeddah"],["Morocco","Rabat","Casablanca"],["New Zealand","Wellington","Auckland"]],
+ 3:[["Nigeria","Abuja","Lagos"],["Pakistan","Islamabad","Karachi"],["Kazakhstan","Astana","Almaty"],["Myanmar","Naypyidaw","Yangon"],["Tanzania","Dodoma","Dar es Salaam"],
+  ["Ivory Coast","Yamoussoukro","Abidjan"],["Mongolia","Ulaanbaatar"],["Ethiopia","Addis Ababa"],["Ghana","Accra"],["Colombia","Bogotá","Medellín"],["Philippines","Manila"],
+  ["Iran","Tehran"],["Malaysia","Kuala Lumpur"]]},k=>`Capital of ${k}`);
 const FLAGS=[
  ["Germany",{t:'h',c:['#000','#DD0000','#FFCE00']}],["Netherlands",{t:'h',c:['#AE1C28','#fff','#21468B']}],["Russia",{t:'h',c:['#fff','#0039A6','#D52B1E']}],
  ["Austria",{t:'h',c:['#ED2939','#fff','#ED2939']}],["Hungary",{t:'h',c:['#CE2939','#fff','#477050']}],["Bulgaria",{t:'h',c:['#fff','#00966E','#D62612']}],
@@ -456,7 +480,7 @@ const FLAGS=[
  ["France",{t:'v',c:['#002395','#fff','#ED2939']}],["Italy",{t:'v',c:['#009246','#fff','#CE2B37']}],["Romania",{t:'v',c:['#002B7F','#FCD116','#CE1126']}],
  ["Belgium",{t:'v',c:['#000','#FDDA24','#EF3340']}],["Ireland",{t:'v',c:['#169B62','#fff','#FF883E']}],["Nigeria",{t:'v',c:['#008751','#fff','#008751']}],
  ["Mali",{t:'v',c:['#14B53A','#FCD116','#CE1126']}],["Peru",{t:'v',c:['#D91023','#fff','#D91023']}],["Guinea",{t:'v',c:['#CE1126','#FCD116','#009460']}],
- ["Ivory Coast",{t:'v',c:['#F77F00','#fff','#009E60']}],
+ ["Ivory Coast",{t:'v',c:['#F77F00','#fff','#009E60']}],["Chad",{t:'v',c:['#002664','#FECB00','#C60C30']}],
  ["Sweden",{t:'n',bg:'#006AA7',x:'#FECC00'}],["Finland",{t:'n',bg:'#fff',x:'#002F6C'}],["Denmark",{t:'n',bg:'#C8102E',x:'#fff'}],
  ["Norway",{t:'n',bg:'#BA0C2F',x:'#fff',in:'#00205B'}],["Iceland",{t:'n',bg:'#02529C',x:'#fff',in:'#DC1E35'}],
  ["Japan",{t:'o',bg:'#fff',dot:'#BC002D',cx:.5,r:.3}],["Bangladesh",{t:'o',bg:'#006A4E',dot:'#F42A41',cx:.45,r:.3}],
@@ -478,24 +502,38 @@ function flagURL(f){
   if(f.t!=='ch'){x.strokeStyle='rgba(0,0,0,.25)';x.lineWidth=2;x.strokeRect(1,1,W-2,H-2)}
   return c.toDataURL();
 }
-const flags=(()=>{const d=deck(FLAGS),pool=FLAGS.map(f=>f[0]);return()=>{const [n,f]=d();return{q:'Which country is this?',c:n,w:pickN(pool,2,n),img:flagURL(f),tag:'flag'}}})();
+const FLAG_LV={1:['Japan','France','Italy','Germany','Switzerland','Sweden','Greece','Ukraine','Romania','Poland'],
+ 2:['Netherlands','Russia','Austria','Hungary','Bulgaria','Ireland','Belgium','Denmark','Norway','Finland','Czechia','Nigeria'],
+ 3:['Estonia','Lithuania','Latvia','Colombia','Thailand','Indonesia','Mali','Peru','Guinea','Ivory Coast','Iceland','Bangladesh','Chad']};
+const FLAG_TRAP={Romania:'Chad',Chad:'Romania',Ireland:'Ivory Coast','Ivory Coast':'Ireland',Mali:'Guinea',Guinea:'Mali',Indonesia:'Poland',Poland:'Indonesia',
+ Netherlands:'Russia',Russia:'Netherlands',Italy:'Ireland',Norway:'Iceland',Iceland:'Norway',Sweden:'Finland',Lithuania:'Bolivia',Latvia:'Austria',Austria:'Latvia',Peru:'Austria',Colombia:'Ecuador',Bangladesh:'Japan',Japan:'Bangladesh'};
+const flags=byLv(FLAG_LV,(names,l)=>{const d=deck(names),pool=FLAGS.map(f=>f[0]);return()=>{const n=d(),f=FLAGS.find(x=>x[0]===n)[1];
+  const t=l>1&&pool.includes(FLAG_TRAP[n])?FLAG_TRAP[n]:null;return{q:'Which country is this?',c:n,w:pickN(pool,2,n,t),img:flagURL(f),tag:'flag'}}});
 
 /* ---- Science ---- */
 const PLANETS=['Mercury','Venus','Earth','Mars','Jupiter','Saturn','Uranus','Neptune'];
-const planets=(()=>{const d=deck([["The largest planet","Jupiter"],["Closest planet to the Sun","Mercury"],["Known as the Red Planet","Mars"],
- ["Planet with the brightest rings","Saturn"],["The hottest planet","Venus"],["Farthest planet from the Sun","Neptune"],["Third planet from the Sun","Earth"],
- ["Planet that spins on its side","Uranus"],["The smallest planet","Mercury"],["Named after the Roman sea god","Neptune"],["Named after the Roman god of war","Mars"],
- ["Has the Great Red Spot","Jupiter"]]);return()=>{const [q,c]=d();return{q,c,w:pickN(PLANETS,2,c)}}})();
-const ELEMENTS=[["Fe","Iron"],["O","Oxygen"],["Au","Gold"],["Ag","Silver"],["Na","Sodium"],["K","Potassium"],["H","Hydrogen"],["C","Carbon"],
- ["Cu","Copper"],["He","Helium"],["Ca","Calcium"],["Pb","Lead"],["N","Nitrogen"],["Cl","Chlorine"],["Zn","Zinc"],["Hg","Mercury"]];
-const elements=(()=>{const d=deck(ELEMENTS);return()=>{const [s,n]=d();
-  if(Math.random()<.5)return{q:`Which element is ${s}?`,c:n,w:pickN(ELEMENTS.map(e=>e[1]),2,n)};
-  return{q:`Chemical symbol for ${n.toUpperCase()}`,c:s,w:pickN(ELEMENTS.map(e=>e[0]),2,s,s==='K'?'P':s==='Na'?'S':s==='Ag'?'Si':null)}}})();
-const body=fixed([
- ["Organ that pumps blood","heart","lungs","liver"],["The body's largest organ","skin","liver","brain"],["Bones in an adult body","206","106","306"],
- ["The longest bone","femur","humerus","tibia"],["Organs that filter blood","kidneys","lungs","stomach"],["Gas we breathe out","CO₂","O₂","H₂"],
- ["Teeth in a full adult set","32","28","24"],["Cells that fight infection","white cells","red cells","platelets"],["Where gas exchange happens","lungs","heart","kidneys"],
- ["Body's control centre","brain","heart","spine"],["Connects muscle to bone","tendon","ligament","cartilage"],["Coloured part of the eye","iris","pupil","retina"]]);
+const planets=byLv({1:[["The largest planet","Jupiter"],["Known as the Red Planet","Mars"],["Planet with the brightest rings","Saturn"],["Third planet from the Sun","Earth"],
+  ["Closest planet to the Sun","Mercury"],["The smallest planet","Mercury"]],
+ 2:[["The hottest planet","Venus"],["Farthest planet from the Sun","Neptune"],["Has the Great Red Spot","Jupiter"],["Named after the Roman god of war","Mars"],
+  ["Named after the Roman sea god","Neptune"],["Planet between Earth and Jupiter","Mars"]],
+ 3:[["Planet that spins on its side","Uranus"],["Its day is longer than its year","Venus"],["Light enough to float in water","Saturn"],["First found with a telescope (1781)","Uranus"],
+  ["Home of Olympus Mons, the tallest volcano","Mars"],["Has the fastest winds","Neptune"],["Fastest orbit around the Sun","Mercury"]]},
+ list=>{const d=deck(list);return()=>{const [q,c]=d();return{q,c,w:pickN(PLANETS,2,c)}}});
+const ELEMENTS={1:[["H","Hydrogen"],["O","Oxygen"],["C","Carbon"],["N","Nitrogen"],["He","Helium"],["S","Sulfur"]],
+ 2:[["Fe","Iron"],["Cu","Copper"],["Zn","Zinc"],["Cl","Chlorine"],["Mg","Magnesium"],["Al","Aluminium"],["Ca","Calcium"]],
+ 3:[["Au","Gold"],["Ag","Silver"],["Na","Sodium"],["K","Potassium"],["Pb","Lead"],["Hg","Mercury"],["Sn","Tin"],["W","Tungsten"]]};
+const ALL_EL=[1,2,3].flatMap(l=>ELEMENTS[l]);
+const EL_TRAP={K:'P',Na:'S',Ag:'Si',Au:'Ag',Pb:'Li',Hg:'Me',Sn:'Ti',W:'Tu',Fe:'Ir',Cu:'Co',Mg:'Mn',Cl:'C'};
+const elements=byLv(ELEMENTS,list=>{const d=deck(list);return()=>{const [s,n]=d();
+  if(Math.random()<.5)return{q:`Which element is ${s}?`,c:n,w:pickN(ALL_EL.map(e=>e[1]),2,n)};
+  return{q:`Chemical symbol for ${n.toUpperCase()}`,c:s,w:pickN(ALL_EL.map(e=>e[0]),2,s,EL_TRAP[s])}}});
+const body=fixedL({1:[["Organ that pumps blood","heart","lungs","liver"],["Organs we breathe with","lungs","kidneys","heart"],["We smell with our…","nose","ears","tongue"],
+  ["The body's control centre","brain","heart","stomach"],["We taste with our…","tongue","nose","teeth"],["Frame of bones in the body","skeleton","muscle","skin"]],
+ 2:[["The body's largest organ","skin","liver","brain"],["Bones in an adult body","206","106","306"],["Teeth in a full adult set","32","28","24"],["Gas we breathe out","CO₂","O₂","H₂"],
+  ["Organs that filter blood","kidneys","lungs","stomach"],["Coloured part of the eye","iris","pupil","retina"],["The longest bone","femur","humerus","tibia"]],
+ 3:[["Tiny air sacs in the lungs","alveoli","bronchi","villi"],["Connects muscle to bone","tendon","ligament","cartilage"],["Cells that help blood clot","platelets","red cells","white cells"],
+  ["Largest internal organ","liver","lungs","brain"],["Insulin is made in the…","pancreas","liver","kidneys"],["The smallest bone is in the…","ear","foot","hand"],
+  ["Pigment that colours skin","melanin","keratin","insulin"],["Cells that fight infection","white cells","red cells","platelets"]]});
 
 /* ---- Informatics ---- */
 const binary=()=>{const L=LV(),bits=L+2,n=ri_([1,3,8][L-1],(1<<bits)-1),b=n.toString(2).padStart(bits,'0');
@@ -503,19 +541,29 @@ const binary=()=>{const L=LV(),bits=L+2,n=ri_([1,3,8][L-1],(1<<bits)-1),b=n.toSt
     return{q:`${b}₂ in decimal`,c:String(n),w,code:'Binary'}}
   const flip=i=>b.split('').map((d,j)=>j===i?(d==='0'?'1':'0'):d).join('');const w=pickN(b.split('').map((_,i)=>flip(i)),2,b);
   return{q:`${n} in binary`,c:b,w,code:'Binary'}};
-const python=()=>{const t=ri_(0,6),P='Python';
-  if(t===0){const a=ri_(7,20),b=ri_(2,5),c=Math.floor(a/b);return{q:`${a} // ${b}`,c:String(c),w:pickN([String(+(a/b).toFixed(2)),String(c+1),String(a%b)],2,String(c)),code:P}}
-  if(t===1){const b=ri_(3,5),a=ri_(7,23);const c=a%b;return{q:`${a} % ${b}`,c:String(c),w:pickN([String(Math.floor(a/b)),String(c+1),String(b),String(c+2)],2,String(c)),code:P}}
-  if(t===2){const a=ri_(2,5),b=ri_(2,3);const c=a**b;return{q:`${a} ** ${b}`,c:String(c),w:pickN([String(a*b),String(c+a),String(a+b),String(c*2)],2,String(c)),code:P}}
-  if(t===3){const wd=['cat','hello','python','code','apple','robot','loop'][ri_(0,6)];return{q:`len("${wd}")`,c:String(wd.length),w:[String(wd.length-1),String(wd.length+1)],code:P}}
-  if(t===4){const [a,b,c,f]=[[10,4,'2.5','2'],[9,2,'4.5','4'],[7,2,'3.5','3'],[12,8,'1.5','1'],[5,2,'2.5','2']][ri_(0,4)];return{q:`${a} / ${b}`,c,w:[f,String(+f+1)],code:P}}
-  if(t===5){const a=ri_(1,9),b=ri_(1,9);return{q:`"${a}" + "${b}"`,c:`"${a}${b}"`,w:[String(a+b),`"${a+b}"`].filter(v=>v!==`"${a}${b}"`).concat(['error']).slice(0,2),code:P}}
-  const a=ri_(2,9),b=ri_(1,9);return{q:`int("${a}") + ${b}`,c:String(a+b),w:[`${a}${b}`,'error'],code:P}};
-const shortcuts=paired([["COPY","Ctrl+C"],["PASTE","Ctrl+V"],["UNDO","Ctrl+Z"],["CUT","Ctrl+X"],["SAVE","Ctrl+S"],["SELECT ALL","Ctrl+A"],
- ["FIND","Ctrl+F"],["PRINT","Ctrl+P"],["REDO","Ctrl+Y"],["NEW TAB","Ctrl+T"],["BOLD","Ctrl+B"]],k=>`Shortcut to ${k}`);
-const units=fixed([["Bits in 1 byte","8","4","16"],["Bits in a nibble","4","8","2"],["Hex F in decimal","15","16","14"],["Hex A in decimal","10","11","16"],
- ["Bits in 2 bytes","16","8","32"],["Bytes in 1 KiB","1024","1000","512"],["Biggest of these","terabyte","gigabyte","megabyte"],["Smallest unit of data","bit","byte","nibble"],
- ["Hex 10 in decimal","16","10","20"],["Binary uses 0 and…","1","2","10"]]);
+const python=()=>{const L=LV(),P='Python';
+  const T={1:['len','concat','arith'],2:['floordiv','mod','pow','len'],3:['int','repeat','div','nested','bool','pow']}[L];const k=T[ri_(0,T.length-1)];
+  if(k==='len'){const wd=['cat','hello','python','code','apple','robot','loop'][ri_(0,6)];return{q:`len("${wd}")`,c:String(wd.length),w:[String(wd.length-1),String(wd.length+1)],code:P}}
+  if(k==='concat'){const a=['sun','ice','rain','foot'][ri_(0,3)],b=['day','cream','bow','ball'][ri_(0,3)];return{q:`"${a}" + "${b}"`,c:`"${a}${b}"`,w:[`"${a} ${b}"`,`"${b}${a}"`],code:P}}
+  if(k==='arith'){const a=ri_(2,9),b=ri_(2,5),c=ri_(2,4);return{q:`${a} + ${b} * ${c}`,c:String(a+b*c),w:pickN([String((a+b)*c),String(a+b+c),String(a*b+c)],2,String(a+b*c)),code:P}}
+  if(k==='floordiv'){const a=ri_(7,20),b=ri_(2,5),c=Math.floor(a/b);return{q:`${a} // ${b}`,c:String(c),w:pickN([String(+(a/b).toFixed(2)),String(c+1),String(a%b)],2,String(c)),code:P}}
+  if(k==='mod'){const b=ri_(3,5),a=ri_(7,23),c=a%b;return{q:`${a} % ${b}`,c:String(c),w:pickN([String(Math.floor(a/b)),String(c+1),String(b),String(c+2)],2,String(c)),code:P}}
+  if(k==='pow'){const a=ri_(2,L===3?6:4),b=ri_(2,3),c=a**b;return{q:`${a} ** ${b}`,c:String(c),w:pickN([String(a*b),String(c+a),String(a+b),String(c*2)],2,String(c)),code:P}}
+  if(k==='int'){const a=ri_(2,9),b=ri_(1,9);return{q:`int("${a}") + ${b}`,c:String(a+b),w:[`${a}${b}`,'error'],code:P}}
+  if(k==='repeat'){const s=['ab','ha','no'][ri_(0,2)],n=ri_(2,3);return{q:`"${s}" * ${n}`,c:`"${s.repeat(n)}"`,w:[`"${s}${n}"`,'error'],code:P}}
+  if(k==='div'){const [a,b,c,f]=[[10,4,'2.5','2'],[9,2,'4.5','4'],[7,2,'3.5','3'],[12,8,'1.5','1'],[5,2,'2.5','2']][ri_(0,4)];return{q:`${a} / ${b}`,c,w:[f,String(+f+1)],code:P}}
+  if(k==='nested'){const o=[['len([1, [2, 3]])','2','3','1'],['len([[1, 2], [3, 4]])','2','4','1'],['[1, 2, 3][-1]','3','1','error'],['"code"[1]','"o"','"c"','"d"']][ri_(0,3)];return{q:o[0],c:o[1],w:[o[2],o[3]],code:P}}
+  const o=[['bool("")','False','True','error'],['bool(0)','False','True','0'],['bool("0")','True','False','0'],['bool([])','False','True','[]']][ri_(0,3)];return{q:o[0],c:o[1],w:[o[2],o[3]],code:P}};
+const shortcuts=pairedL({1:[["COPY","Ctrl+C"],["PASTE","Ctrl+V"],["UNDO","Ctrl+Z"],["SAVE","Ctrl+S"],["CUT","Ctrl+X"],["SELECT ALL","Ctrl+A"]],
+ 2:[["FIND","Ctrl+F"],["PRINT","Ctrl+P"],["REDO","Ctrl+Y"],["NEW TAB","Ctrl+T"],["BOLD","Ctrl+B"],["NEW DOCUMENT","Ctrl+N"]],
+ 3:[["CLOSE TAB","Ctrl+W"],["REOPEN CLOSED TAB","Ctrl+Shift+T"],["SWITCH APPS","Alt+Tab"],["TASK MANAGER","Ctrl+Shift+Esc"],["LOCK PC","Win+L"],
+  ["SHOW DESKTOP","Win+D"],["SCREENSHOT TOOL","Win+Shift+S"],["RENAME FILE","F2"]]},k=>`Shortcut to ${k}`);
+const units=fixedL({1:[["Bits in 1 byte","8","4","16"],["Binary uses 0 and…","1","2","10"],["Smallest unit of data","bit","byte","nibble"],
+  ["Biggest of these","gigabyte","megabyte","kilobyte"],["Bits in 2 bytes","16","8","32"]],
+ 2:[["Bits in a nibble","4","8","2"],["Hex A in decimal","10","11","16"],["Hex F in decimal","15","16","14"],["Bytes in 1 KiB","1024","1000","512"],
+  ["Biggest of these","terabyte","gigabyte","petabit"],["Hex 10 in decimal","16","10","20"]],
+ 3:[["Hex FF in decimal","255","256","240"],["Largest value in 1 byte","255","256","128"],["Bits in 4 bytes","32","16","64"],["Hex 1F in decimal","31","25","15"],
+  ["KiB in 1 MiB","1024","1000","512"],["Different values in 1 byte","256","255","128"],["Hex 2A in decimal","42","32","24"]]});
 
 /* ---- Subjects & topics ---- */
 const SUBJECTS=[
