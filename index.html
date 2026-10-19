@@ -56,6 +56,11 @@ button:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
 .chip{font:500 10px/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;padding:6px 9px;border-radius:999px;border:1px solid var(--line);
   background:var(--glass);color:var(--soft);font-variant-numeric:tabular-nums}
 .chip b{color:var(--ink);font-weight:500}
+.hearts{display:inline-flex;align-items:center;gap:3px;padding:4px 8px}
+.hearts svg{width:14px;height:14px;fill:#ff4d5e;transition:fill .3s}
+.hearts svg.lost{fill:rgba(232,238,244,.2)}
+.hearts.hit{animation:hshake .45s}
+@keyframes hshake{20%{transform:translateX(-4px)}40%{transform:translateX(4px)}60%{transform:translateX(-3px)}80%{transform:translateX(2px)}}
 #streakChip.hot{border-color:rgba(255,106,79,.5);color:var(--ember2)}
 #boost{width:120px;height:3px;border-radius:2px;background:var(--line);overflow:hidden;transition:opacity .3s}
 #boost i{display:block;height:100%;width:100%;background:var(--good);transform-origin:left;transform:scaleX(0)}
@@ -173,10 +178,16 @@ button:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
 .review li b{color:var(--good);font-weight:500}
 .perfect{font:400 italic 20px/1.3 var(--display);color:var(--good);text-align:center;margin:0}
 /* home + pickers: the live scene shows through */
-#sheet.peek{background:linear-gradient(180deg,rgba(6,9,13,.6) 0%,rgba(6,9,13,0) 18%,rgba(6,9,13,0) 40%,rgba(6,9,13,.9) 64%);-webkit-backdrop-filter:none;backdrop-filter:none}
+#sheet.peek{background:linear-gradient(180deg,rgba(6,9,13,.75) 0%,rgba(6,9,13,.35) 22%,rgba(6,9,13,0) 34%,rgba(6,9,13,0) 58%,rgba(6,9,13,.88) 78%);-webkit-backdrop-filter:none;backdrop-filter:none}
 .screen.home{justify-content:space-between;padding-bottom:calc(24px + env(safe-area-inset-bottom,0px))}
 .bottom{display:grid;gap:14px}
-.home .brand{text-align:center;display:grid;gap:6px;margin-bottom:6px}
+.home .top{display:grid;gap:4px}
+.topbar.end{justify-content:flex-end;min-height:40px}
+.home .brand{text-align:center;display:grid;gap:8px}
+.iconbtn{position:relative;width:40px;height:40px;border-radius:50%;border:1px solid var(--line2);background:rgba(9,13,19,.6);display:grid;place-items:center;color:var(--ink);cursor:pointer;padding:0}
+.iconbtn svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.iconbtn[aria-pressed="false"]{color:var(--dim)}
+.iconbtn[aria-pressed="false"]::after{content:"";position:absolute;width:24px;height:2px;border-radius:1px;background:var(--dim);transform:rotate(-45deg)}
 .brandbig{font:300 italic clamp(66px,20vw,100px)/.9 var(--display);margin:0;letter-spacing:-.01em;text-shadow:0 4px 30px rgba(0,0,0,.5)}
 .brandbig em{font-style:normal;color:var(--ember2)}
 .home .lead{text-align:center}
@@ -223,6 +234,36 @@ button:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
 .sicon svg{width:100%;height:100%;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
 #score.bump{animation:bump .25s ease-out}
 @keyframes bump{50%{transform:scale(1.14)}}
+#tutor{inset:0;display:grid;align-content:center;justify-items:center;gap:14px;padding-bottom:12vh;
+  background:radial-gradient(90% 60% at 50% 45%,rgba(6,9,13,.15),rgba(6,9,13,.55));transition:opacity .35s,visibility .35s}
+.tcard{background:rgba(8,11,16,.9);border:1px solid rgba(255,255,255,.14);border-radius:18px;padding:14px 26px 14px;text-align:center;box-shadow:0 14px 40px rgba(0,0,0,.45)}
+.tcard b{display:block;font:500 34px/1.05 var(--display);color:#fff}
+.tcard small{display:block;margin-top:6px;font:400 12px/1.3 var(--mono);color:var(--soft)}
+.tdots{display:flex;gap:6px;justify-content:center;margin-top:12px}
+.tdots i{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.22);transition:background .2s}
+.tdots i.on{background:#ffd23f}
+.tdots i.done{background:#3ddc84}
+.stage{position:relative;width:260px;height:170px;max-width:100%}
+.arrow{position:absolute;opacity:.85}
+.arrow::after{content:"";position:absolute;width:14px;height:14px;border:solid #ffd23f;border-width:0 4px 4px 0}
+#tutor[data-g="left"] .arrow,#tutor[data-g="right"] .arrow{left:40px;right:40px;top:28px;border-top:4px dashed rgba(255,210,63,.75)}
+#tutor[data-g="left"] .arrow::after{left:-4px;top:-11px;transform:rotate(135deg)}
+#tutor[data-g="right"] .arrow::after{right:-4px;top:-11px;transform:rotate(-45deg)}
+#tutor[data-g="up"] .arrow{left:128px;top:6px;height:110px;border-left:4px dashed rgba(255,210,63,.75)}
+#tutor[data-g="up"] .arrow::after{left:-11px;top:-4px;transform:rotate(-135deg)}
+.hand{position:absolute;width:72px;left:calc(50% - 34px);top:24px;filter:drop-shadow(0 8px 16px rgba(0,0,0,.55))}
+.hand .tip{fill:rgba(255,210,63,.0)}
+#tutor[data-g="left"] .hand{animation:hl 1.5s cubic-bezier(.5,0,.3,1) infinite}
+#tutor[data-g="right"] .hand{animation:hr 1.5s cubic-bezier(.5,0,.3,1) infinite}
+#tutor[data-g="up"] .hand{top:70px;animation:hu 1.3s cubic-bezier(.5,0,.3,1) infinite}
+@keyframes hl{0%{transform:translateX(70px) scale(1.08);opacity:0}15%{transform:translateX(70px) scale(1);opacity:1}70%{transform:translateX(-70px);opacity:1}100%{transform:translateX(-70px);opacity:0}}
+@keyframes hr{0%{transform:translateX(-70px) scale(1.08);opacity:0}15%{transform:translateX(-70px) scale(1);opacity:1}70%{transform:translateX(70px);opacity:1}100%{transform:translateX(70px);opacity:0}}
+@keyframes hu{0%{transform:translateY(30px) scale(1.08);opacity:0}15%{transform:translateY(30px) scale(1);opacity:1}70%{transform:translateY(-60px);opacity:1}100%{transform:translateY(-60px);opacity:0}}
+#tutor.nope .tcard{animation:hshake .4s}
+#tutor.yes .tcard{border-color:#3ddc84}
+.skip{pointer-events:auto;position:absolute;left:50%;transform:translateX(-50%);bottom:calc(28px + env(safe-area-inset-bottom,0px));height:40px;padding:0 18px;border-radius:999px;border:1px solid rgba(255,255,255,.2);background:rgba(8,11,16,.75);
+  color:var(--soft);font:500 11px/1 var(--mono);letter-spacing:.16em;text-transform:uppercase;cursor:pointer}
+@media (prefers-reduced-motion:reduce){#tutor .hand{animation:none!important}}
 @media (prefers-reduced-motion:reduce){#count.tick{animation:none}*{transition-duration:.01s!important}}
 </style>
 </head>
@@ -235,7 +276,8 @@ button:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
   <div id="mid">
     <div id="scoreWrap"><div id="score">0</div><span id="delta"></span></div>
     <div id="chips">
-      <span class="chip"><b id="rightN">0</b>/<span id="askedN">0</span> right</span>
+      <span class="chip hearts" id="heartsChip" role="img" aria-label="Lives"></span>
+      <span class="chip">Q <b id="progN">0</b>/<span id="progT">0</span></span>
       <span class="chip" id="streakChip">streak <b id="streakN">0</b></span>
     </div>
   </div>
@@ -248,6 +290,13 @@ button:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
 </div>
 <div id="toast" class="ui off"></div>
 <div id="count" class="ui off"></div>
+<div id="tutor" class="ui off" data-g="left" aria-live="polite">
+  <div class="tcard"><b id="tutB">Swipe left</b><small id="tutS">to change lane</small><div class="tdots"><i></i><i></i><i></i></div></div>
+  <div class="stage" aria-hidden="true"><div class="arrow"></div>
+    <svg class="hand" viewBox="0 0 64 84"><path d="M24 10a6.5 6.5 0 0 1 13 0V38a5.5 5.5 0 0 1 11 0v3a5 5 0 0 1 10 0V60c0 13-9 22-21 22h-3c-8 0-13-4-17-10L5 54a5 5 0 0 1 8-6L24 60Z" fill="#fff" stroke="#0b0f14" stroke-width="3" stroke-linejoin="round"/><path d="M37 38v8M48 41v7" stroke="#0b0f14" stroke-width="2.5" stroke-linecap="round" fill="none"/></svg>
+  </div>
+  <button type="button" class="skip" id="skipTut">Skip</button>
+</div>
 <div id="flash"></div>
 <div id="scrim"></div>
 
@@ -255,24 +304,24 @@ button:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
 <div id="sheet" class="ui">
   <div id="menu">
     <section class="screen home" id="scrHome">
-      <header class="topbar">
-        <span></span>
-        <div class="audio">
-          <button type="button" class="toggle" id="musicT" aria-pressed="true"><i></i>Music</button>
-          <button type="button" class="toggle" id="sfxT" aria-pressed="true"><i></i>Sound</button>
-        </div>
-      </header>
-      <div class="bottom">
+      <div class="top">
+        <header class="topbar end">
+          <div class="audio">
+            <button type="button" class="iconbtn" id="musicT" aria-pressed="true" aria-label="Music"><svg viewBox="0 0 24 24"><path d="M9 18V5l11-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="17" cy="16" r="3"/></svg></button>
+            <button type="button" class="iconbtn" id="sfxT" aria-pressed="true" aria-label="Sound effects"><svg viewBox="0 0 24 24"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/></svg></button>
+          </div>
+        </header>
         <div class="brand">
           <h1 class="brandbig">Lane<em>fall</em></h1>
           <p class="lead">Run the lanes. Answer on the move.</p>
         </div>
+      </div>
+      <div class="bottom">
         <button type="button" class="cta play" id="playBtn">Play</button>
         <div class="duo">
           <button type="button" class="pick" id="charBtn"><span class="mini" id="charSw"></span><span class="pt"><small>Character</small><b id="charName"></b></span></button>
           <button type="button" class="pick" id="themeBtn"><span class="mini sw" id="themeSw"></span><span class="pt"><small>Theme</small><b id="themeName"></b></span></button>
         </div>
-        <p class="hint">Swipe to change lane · tap to jump · steer into the right answer</p>
       </div>
     </section>
 
@@ -380,14 +429,14 @@ const byLv=(b,mk)=>{const d=[1,2,3].map(l=>mk(b[l],l));return()=>d[LV()-1]()};
 const fixedL=b=>byLv(b,list=>fixed(list));
 const pairedL=(b,fmt)=>byLv(b,list=>paired(list,fmt));
 const VERBS={1:[["go","went","gone","goed"],["eat","ate","eaten","eated"],["see","saw","seen","seed"],["come","came","come","comed"],["run","ran","run","runned"],
-  ["sleep","slept","slept","sleeped"],["find","found","found","finded"],["feel","felt","felt","fell"],["give","gave","given","gived"],["take","took","taken","taked"]],
+  ["sleep","slept","slept","sleeped"],["find","found","found","finded"],["feel","felt","felt","fell"],["give","gave","given","gived"],["take","took","taken","taked"],["make","made","made","maked"],["have","had","had","haved"],["say","said","said","sayed"],["sit","sat","sat","sitted"],["tell","told","told","telled"]],
  2:[["buy","bought","bought","brought"],["bring","brought","brought","bought"],["think","thought","thought","thank"],["catch","caught","caught","cought"],
   ["teach","taught","taught","tought"],["write","wrote","written","writ"],["drink","drank","drunk","drinked"],["leave","left","left","leaved"],
-  ["know","knew","known","knowed"],["drive","drove","driven","drived"],["break","broke","broken","braked"],["speak","spoke","spoken","speaked"]],
+  ["know","knew","known","knowed"],["drive","drove","driven","drived"],["break","broke","broken","braked"],["speak","spoke","spoken","speaked"],["lose","lost","lost","losed"],["meet","met","met","meeted"],["pay","paid","paid","payed"],["sell","sold","sold","selled"],["understand","understood","understood","understanded"]],
  3:[["swim","swam","swum","swimmed"],["begin","began","begun","begon"],["choose","chose","chosen","choosed"],["fly","flew","flown","flied"],
   ["forget","forgot","forgotten","forgetted"],["ride","rode","ridden","rided"],["steal","stole","stolen","stealed"],["wear","wore","worn","weared"],
   ["seek","sought","sought","seeked"],["forbid","forbade","forbidden","forbidded"],["arise","arose","arisen","arised"],["freeze","froze","frozen","freezed"],
-  ["shake","shook","shaken","shaked"],["sing","sang","sung","singed"]]};
+  ["shake","shook","shaken","shaked"],["sing","sang","sung","singed"],["hide","hid","hidden","hided"],["bite","bit","bitten","bited"],["tear","tore","torn","teared"],["slide","slid","slid","slided"],["bear","bore","borne","beared"]]};
 const irregular=byLv(VERBS,(list,l)=>{const d=deck(list);return()=>{const [b,p,pp,trap]=d();const reg=b.endsWith('e')?b+'d':b+'ed';
   if(Math.random()<[.8,.55,.35][l-1])return{q:`Past simple of ${b.toUpperCase()}`,c:p,w:pickN([reg,pp,trap,b],2,p)};
   return{q:`Past participle of ${b.toUpperCase()}`,c:pp,w:pickN([reg,p,trap,b],2,pp)}}});
@@ -395,46 +444,46 @@ const tenses=fixedL({1:[
  ["She ___ to school every day","goes","is going","went"],["Look! It ___ outside","is raining","rains","rained"],["I ___ him yesterday","saw","see","have seen"],
  ["They ___ football last Sunday","played","play","playing"],["He ___ TV right now","is watching","watches","watched"],["Water ___ at 100 °C","boils","is boiling","boiled"],
  ["She usually ___ coffee","drinks","is drinking","drank"],["We ___ pizza last night","ate","eat","eating"],["Listen! The baby ___","is crying","cries","cried"],
- ["My dad ___ in a bank","works","is work","working"]],
+ ["My dad ___ in a bank","works","is work","working"],["Yesterday I ___ my grandma","visited","visit","visiting"],["She ___ English very well","speaks","speak","speaking"],["We ___ to the park every Sunday","go","goes","going"],["Be quiet! I ___","am reading","read","reads"],["Last year we ___ to Spain","went","go","have gone"]],
  2:[["We ___ here since 2020","have lived","live","lived"],["When I called, she ___ dinner","was cooking","cooks","has cooked"],["Have you ever ___ sushi?","eaten","ate","eat"],
  ["I've already ___ my homework","finished","finish","finishing"],["I ___ to Paris twice","have been","was","am"],["While I ___ home, it started to rain","was walking","walk","have walked"],
  ["I think it ___ tomorrow","will rain","rained","raining"],["She ___ her keys, so she can't get in","has lost","loses","is losing"],
- ["They ___ TV when the lights went out","were watching","watched","watch"],["How long ___ you known her?","have","did","are"]],
+ ["They ___ TV when the lights went out","were watching","watched","watch"],["How long ___ you known her?","have","did","are"],["I ___ dinner when you called","was having","have","have had"],["She ___ lived here for ten years","has","is","was"],["Next week I ___ my uncle","am visiting","visited","have visited"],["They ___ finished yet","haven't","didn't","aren't"],["___ you ever been to London?","Have","Did","Were"]],
  3:[["By the time we arrived, the film ___","had started","has started","starts"],["By next June, I ___ here for ten years","will have worked","will work","worked"],
  ["If I ___ you, I'd apologise","were","am","will be"],["If it had rained, we ___ stayed in","would have","will have","had"],["The bridge ___ in 1890","was built","built","has built"],
  ["She ___ for hours when he finally called","had been waiting","was waited","has waited"],["I wish I ___ more time","had","have","will have"],
- ["He said he ___ tired","was","is being","will"],["Hardly ___ arrived when it rained","had he","he had","has he"],["If you heat ice, it ___","melts","would melt","melted"]]});
-const opposites=pairedL({1:[["HOT","cold"],["BIG","small"],["UP","down"],["HAPPY","sad"],["FAST","slow"],["FULL","empty"],["YOUNG","old"],["WIN","lose"],["PUSH","pull"],["OPEN","closed"],["DAY","night"],["WET","dry"]],
- 2:[["EARLY","late"],["HEAVY","light"],["STRONG","weak"],["RICH","poor"],["NOISY","quiet"],["CHEAP","expensive"],["ARRIVE","leave"],["REMEMBER","forget"],["ALWAYS","never"],["BUY","sell"],["ACCEPT","refuse"],["DANGEROUS","safe"]],
- 3:[["ANCIENT","modern"],["GENEROUS","selfish"],["ARTIFICIAL","natural"],["TEMPORARY","permanent"],["SCARCE","plentiful"],["VAGUE","precise"],["BRAVE","cowardly"],["MAXIMUM","minimum"],["INCREASE","decrease"],["FREQUENT","rare"],["GUILTY","innocent"],["EXPAND","shrink"]]},k=>`Opposite of ${k}`);
+ ["He said he ___ tired","was","is being","will"],["Hardly ___ arrived when it rained","had he","he had","has he"],["If you heat ice, it ___","melts","would melt","melted"],["The letter ___ by the time I got home","had been delivered","has delivered","was delivering"],["If I had studied, I ___ passed","would have","will have","would"],["This time tomorrow, I ___ on a beach","will be lying","lay","am lain"],["Not only ___ late, but he also forgot","was he","he was","he is"],["The house ___ painted at the moment","is being","is been","has being"]]});
+const opposites=pairedL({1:[["HOT","cold"],["BIG","small"],["UP","down"],["HAPPY","sad"],["FAST","slow"],["FULL","empty"],["YOUNG","old"],["WIN","lose"],["PUSH","pull"],["OPEN","closed"],["DAY","night"],["WET","dry"],["HARD","soft"],["LONG","short"],["CLEAN","dirty"],["LIGHT","dark"],["FIRST","last"]],
+ 2:[["EARLY","late"],["HEAVY","light"],["STRONG","weak"],["RICH","poor"],["NOISY","quiet"],["CHEAP","expensive"],["ARRIVE","leave"],["REMEMBER","forget"],["ALWAYS","never"],["BUY","sell"],["ACCEPT","refuse"],["DANGEROUS","safe"],["MAJORITY","minority"],["TIGHT","loose"],["POLITE","rude"],["SHALLOW","deep"],["QUESTION","answer"]],
+ 3:[["ANCIENT","modern"],["GENEROUS","selfish"],["ARTIFICIAL","natural"],["TEMPORARY","permanent"],["SCARCE","plentiful"],["VAGUE","precise"],["BRAVE","cowardly"],["MAXIMUM","minimum"],["INCREASE","decrease"],["FREQUENT","rare"],["GUILTY","innocent"],["EXPAND","shrink"],["OPTIMIST","pessimist"],["ARRIVAL","departure"],["VOLUNTARY","compulsory"],["ASCEND","descend"],["CONCAVE","convex"]]},k=>`Opposite of ${k}`);
 const prepositions=fixedL({1:[
  ["The book is ___ the table","on","at","of"],["See you ___ Monday","on","in","at"],["I was born ___ 2010","in","on","at"],["Let's meet ___ 5 o'clock","at","in","on"],
  ["The cat is ___ the box","in","at","to"],["I go to school ___ bus","by","with","on"],["We live ___ Romania","in","at","on"],["I listen ___ music","to","at","for"],
- ["Wait ___ me!","for","to","on"],["The ball is ___ the chair","under","at","of"]],
+ ["Wait ___ me!","for","to","on"],["The ball is ___ the chair","under","at","of"],["The cat sat ___ to me","next","near","by"],["She lives ___ London","in","at","on"],["Put the milk ___ the fridge","in","on","at"],["My birthday is ___ May","in","on","at"],["We go home ___ 3 p.m.","at","in","on"]],
  2:[["She's good ___ maths","at","in","on"],["He's afraid ___ spiders","of","from","at"],["I'm interested ___ art","in","on","at"],["It depends ___ the weather","on","of","from"],
  ["She's proud ___ her son","of","on","for"],["We arrived ___ the airport","at","to","on"],["I'm tired ___ waiting","of","from","with"],["Thank you ___ the gift","for","of","to"],
- ["He's different ___ his brother","from","of","at"],["Who does this belong ___?","to","at","for"]],
+ ["He's different ___ his brother","from","of","at"],["Who does this belong ___?","to","at","for"],["I'm looking forward ___ the trip","to","for","at"],["He's famous ___ his songs","for","of","with"],["It's full ___ water","of","with","in"],["I agree ___ you","with","to","on"],["She's worried ___ the test","about","of","at"]],
  3:[["She's married ___ a doctor","to","with","by"],["He insisted ___ paying","on","for","to"],["She succeeded ___ passing","in","at","on"],["I'm not keen ___ horror films","on","of","for"],
  ["He was accused ___ cheating","of","for","with"],["We congratulated her ___ winning","on","for","to"],["It's similar ___ mine","to","as","with"],
- ["She's responsible ___ the team","for","of","on"],["I apologised ___ being late","for","of","to"],["He's capable ___ more","of","to","for"]]});
+ ["She's responsible ___ the team","for","of","on"],["I apologised ___ being late","for","of","to"],["He's capable ___ more","of","to","for"],["She's addicted ___ coffee","to","on","with"],["He's aware ___ the risk","of","about","for"],["They objected ___ the plan","to","against","on"],["It's a matter ___ time","of","for","in"],["He was charged ___ theft","with","of","for"]]});
 const spelling=byLv({1:[["friend","freind","frend"],["because","becuase","becouse"],["beautiful","beatiful","beautifull"],["Wednesday","Wensday","Wednsday"],
-  ["tomorrow","tommorow","tomorow"],["people","peaple","poeple"],["school","shcool","scool"],["February","Febuary","Febraury"]],
+  ["tomorrow","tommorow","tomorow"],["people","peaple","poeple"],["school","shcool","scool"],["February","Febuary","Febraury"],["Saturday","Saterday","Saturdey"],["yellow","yelow","yello"],["little","litle","littel"],["animal","animle","aminal"],["happy","hapy","happey"],["thought","thougt","thougth"]],
  2:[["necessary","neccessary","necesary"],["separate","seperate","separete"],["different","diffrent","diferent"],["library","libary","librery"],
-  ["address","adress","addres"],["believe","beleive","belive"],["receive","recieve","receeve"],["definitely","definately","definitly"]],
+  ["address","adress","addres"],["believe","beleive","belive"],["receive","recieve","receeve"],["definitely","definately","definitly"],["environment","enviroment","enviornment"],["government","goverment","govermant"],["business","buisness","busness"],["calendar","calender","calandar"],["argument","arguement","argumant"],["knowledge","knowlege","knowledgde"]],
  3:[["accommodate","accomodate","acommodate"],["embarrass","embarass","embarras"],["conscience","concience","consience"],["millennium","millenium","milennium"],
-  ["occurrence","occurence","ocurrence"],["rhythm","rythm","rhythym"],["questionnaire","questionaire","questionnair"],["liaison","liason","liasion"]]},
+  ["occurrence","occurence","ocurrence"],["rhythm","rythm","rhythym"],["questionnaire","questionaire","questionnair"],["liaison","liason","liasion"],["bureaucracy","beaurocracy","bureacracy"],["entrepreneur","entrepeneur","entreprenuer"],["mischievous","mischievious","mischevous"],["pharaoh","pharoah","pharoh"],["onomatopoeia","onomatopeia","onomatopoea"],["playwright","playwrite","plawright"]]},
  list=>{const d=deck(list);return()=>{const [c,a,b]=d();return{q:'Which is spelled right?',c,w:[a,b]}}});
 const phrasal=fixedL({1:[
  ["To WAKE UP means to…","stop sleeping","eat","run"],["To SIT DOWN means to…","take a seat","stand","jump"],["To TURN ON a light means to…","switch it on","break it","paint it"],
  ["To PUT ON a coat means to…","wear it","wash it","sell it"],["To LOOK FOR means to…","search","watch","avoid"],["To GET UP means to…","leave your bed","fall asleep","go out"],
- ["To TAKE OFF shoes means to…","remove them","buy them","clean them"],["To COME BACK means to…","return","leave","arrive late"]],
+ ["To TAKE OFF shoes means to…","remove them","buy them","clean them"],["To COME BACK means to…","return","leave","arrive late"],["To TURN OFF the TV means to…","switch it off","fix it","buy it"],["To STAND UP means to…","rise to your feet","sit","lie down"],["To GO OUT means to…","leave the house","sleep","cook"],["To PICK UP a pen means to…","lift it","drop it","break it"],["To HURRY UP means to…","go faster","stop","wait"]],
  2:[["To GIVE UP means to…","quit","begin","return"],["To LOOK AFTER means to…","take care of","search for","follow"],["To CARRY ON means to…","continue","lift","stop"],
  ["To CALL OFF means to…","cancel","phone","shout"],["To RUN OUT OF means to…","have none left","escape","jog"],["To FIND OUT means to…","discover","lose","hide"],
- ["To PUT OFF a meeting means to…","postpone","attend","cancel"],["To GET ON WITH someone means to…","be friendly","board","argue"]],
+ ["To PUT OFF a meeting means to…","postpone","attend","cancel"],["To GET ON WITH someone means to…","be friendly","board","argue"],["To TAKE UP a hobby means to…","start it","quit it","forget it"],["When a car BREAKS DOWN, it…","stops working","speeds up","parks"],["To FILL IN a form means to…","complete it","tear it","post it"],["To SHOW UP means to…","arrive","leave","hide"],["To WORK OUT the answer means to…","solve it","forget it","exercise"]],
  3:[["To LOOK INTO means to…","investigate","admire","avoid"],["To BRING UP a topic means to…","mention","lift","hide"],["To CUT DOWN ON means to…","reduce","chop","raise"],
  ["To COME ACROSS means to…","find by chance","cross over","arrive"],["To TURN DOWN an offer means to…","refuse","accept","repeat"],["To SET OFF on a trip means to…","leave","arrive","pack"],
  ["To PUT UP WITH means to…","tolerate","build","lift"],["To LOOK DOWN ON means to…","feel superior to","watch","respect"],["To MAKE UP a story means to…","invent","forgive","paint"],
- ["To GET AWAY WITH means to…","escape punishment","leave early","steal"]]});
+ ["To GET AWAY WITH means to…","escape punishment","leave early","steal"],["To FALL OUT WITH someone means to…","argue","meet","agree"],["To BREAK INTO a house means to…","enter by force","leave","paint"],["To RULE OUT means to…","exclude","include","measure"],["To SHOW OFF means to…","boast","hide","apologise"]]});
 
 /* ---- Math ---- */
 const LV=()=>DIFF();
@@ -458,19 +507,19 @@ const order=()=>{const L=LV(),a=ri_(2,[9,9,20][L-1]),b=ri_(2,[4,6,9][L-1]),d=ri_
 
 /* ---- Geography ---- */
 const euroCaps=pairedL({1:[["France","Paris","Marseille"],["Germany","Berlin","Munich"],["Italy","Rome","Milan"],["Spain","Madrid","Barcelona"],["United Kingdom","London","Manchester"],
-  ["Romania","Bucharest","Cluj-Napoca"],["Greece","Athens","Thessaloniki"],["Portugal","Lisbon","Porto"],["Netherlands","Amsterdam","Rotterdam"],["Russia","Moscow","Saint Petersburg"]],
+  ["Romania","Bucharest","Cluj-Napoca"],["Greece","Athens","Thessaloniki"],["Portugal","Lisbon","Porto"],["Netherlands","Amsterdam","Rotterdam"],["Russia","Moscow","Saint Petersburg"],["Sweden","Stockholm","Gothenburg"],["Austria","Vienna","Salzburg"],["Poland","Warsaw","Kraków"]],
  2:[["Austria","Vienna","Salzburg"],["Hungary","Budapest"],["Poland","Warsaw","Kraków"],["Belgium","Brussels","Antwerp"],["Sweden","Stockholm"],["Norway","Oslo"],
   ["Denmark","Copenhagen"],["Ireland","Dublin","Cork"],["Czechia","Prague"],["Finland","Helsinki"],["Switzerland","Bern","Zurich"],["Ukraine","Kyiv","Odesa"]],
  3:[["Bulgaria","Sofia"],["Serbia","Belgrade"],["Croatia","Zagreb","Split"],["Moldova","Chișinău"],["Slovakia","Bratislava"],["Slovenia","Ljubljana"],["Estonia","Tallinn"],
   ["Latvia","Riga"],["Lithuania","Vilnius","Kaunas"],["Iceland","Reykjavík"],["Albania","Tirana"],["North Macedonia","Skopje"],["Montenegro","Podgorica"],["Malta","Valletta"],
   ["Bosnia and Herzegovina","Sarajevo"]]},k=>`Capital of ${k}`);
 const worldCaps=pairedL({1:[["Japan","Tokyo","Osaka"],["China","Beijing","Shanghai"],["United States","Washington","New York"],["Canada","Ottawa","Toronto"],["Egypt","Cairo","Alexandria"],
-  ["Mexico","Mexico City","Cancún"],["Argentina","Buenos Aires"],["South Korea","Seoul","Busan"],["Thailand","Bangkok","Phuket"],["India","New Delhi","Mumbai"]],
+  ["Mexico","Mexico City","Cancún"],["Argentina","Buenos Aires"],["South Korea","Seoul","Busan"],["Thailand","Bangkok","Phuket"],["India","New Delhi","Mumbai"],["Cuba","Havana"],["Iraq","Baghdad","Basra"],["Jamaica","Kingston","Montego Bay"]],
  2:[["Australia","Canberra","Sydney"],["Brazil","Brasília","Rio de Janeiro"],["Turkey","Ankara","Istanbul"],["Kenya","Nairobi","Mombasa"],["Peru","Lima"],["Chile","Santiago"],
-  ["Vietnam","Hanoi","Ho Chi Minh City"],["Saudi Arabia","Riyadh","Jeddah"],["Morocco","Rabat","Casablanca"],["New Zealand","Wellington","Auckland"]],
+  ["Vietnam","Hanoi","Ho Chi Minh City"],["Saudi Arabia","Riyadh","Jeddah"],["Morocco","Rabat","Casablanca"],["New Zealand","Wellington","Auckland"],["Venezuela","Caracas"],["Afghanistan","Kabul"],["Algeria","Algiers","Oran"],["Uruguay","Montevideo"],["Nepal","Kathmandu"],["Bangladesh","Dhaka","Chittagong"]],
  3:[["Nigeria","Abuja","Lagos"],["Pakistan","Islamabad","Karachi"],["Kazakhstan","Astana","Almaty"],["Myanmar","Naypyidaw","Yangon"],["Tanzania","Dodoma","Dar es Salaam"],
   ["Ivory Coast","Yamoussoukro","Abidjan"],["Mongolia","Ulaanbaatar"],["Ethiopia","Addis Ababa"],["Ghana","Accra"],["Colombia","Bogotá","Medellín"],["Philippines","Manila"],
-  ["Iran","Tehran"],["Malaysia","Kuala Lumpur"]]},k=>`Capital of ${k}`);
+  ["Iran","Tehran"],["Malaysia","Kuala Lumpur"],["Bhutan","Thimphu"],["Laos","Vientiane"],["Uzbekistan","Tashkent","Samarkand"],["Senegal","Dakar"],["Sudan","Khartoum"]]},k=>`Capital of ${k}`);
 const FLAGS=[
  ["Germany",{t:'h',c:['#000','#DD0000','#FFCE00']}],["Netherlands",{t:'h',c:['#AE1C28','#fff','#21468B']}],["Russia",{t:'h',c:['#fff','#0039A6','#D52B1E']}],
  ["Austria",{t:'h',c:['#ED2939','#fff','#ED2939']}],["Hungary",{t:'h',c:['#CE2939','#fff','#477050']}],["Bulgaria",{t:'h',c:['#fff','#00966E','#D62612']}],
@@ -481,6 +530,11 @@ const FLAGS=[
  ["Belgium",{t:'v',c:['#000','#FDDA24','#EF3340']}],["Ireland",{t:'v',c:['#169B62','#fff','#FF883E']}],["Nigeria",{t:'v',c:['#008751','#fff','#008751']}],
  ["Mali",{t:'v',c:['#14B53A','#FCD116','#CE1126']}],["Peru",{t:'v',c:['#D91023','#fff','#D91023']}],["Guinea",{t:'v',c:['#CE1126','#FCD116','#009460']}],
  ["Ivory Coast",{t:'v',c:['#F77F00','#fff','#009E60']}],["Chad",{t:'v',c:['#002664','#FECB00','#C60C30']}],
+ ["Vietnam",{t:'h',c:['#DA251D'],star:{c:'#FFFF00',r:.3}}],["Somalia",{t:'h',c:['#4189DD'],star:{c:'#FFFFFF',r:.28}}],["Morocco",{t:'h',c:['#C1272D'],star:{c:'#006233',r:.28}}],
+ ["Senegal",{t:'v',c:['#00853F','#FDEF42','#E31B23'],star:{c:'#00853F',r:.16}}],["Cameroon",{t:'v',c:['#007A5E','#CE1126','#FCD116'],star:{c:'#FCD116',r:.16}}],
+ ["Gabon",{t:'h',c:['#009E60','#FCD116','#3A75C4']}],["Sierra Leone",{t:'h',c:['#1EB53A','#FFFFFF','#0072C6']}],["Yemen",{t:'h',c:['#CE1126','#FFFFFF','#000000']}],
+ ["Armenia",{t:'h',c:['#D90012','#0033A0','#F2A800']}],["Luxembourg",{t:'h',c:['#EF3340','#FFFFFF','#00A3E0']}],["Mauritius",{t:'h',c:['#EA2839','#1A206D','#FFD500','#00A551']}],
+ ["Bolivia",{t:'h',c:['#D52B1E','#F9E300','#007934']}],["Palau",{t:'o',bg:'#4AADD6',dot:'#FFDE00',cx:.45,r:.3}],
  ["Sweden",{t:'n',bg:'#006AA7',x:'#FECC00'}],["Finland",{t:'n',bg:'#fff',x:'#002F6C'}],["Denmark",{t:'n',bg:'#C8102E',x:'#fff'}],
  ["Norway",{t:'n',bg:'#BA0C2F',x:'#fff',in:'#00205B'}],["Iceland",{t:'n',bg:'#02529C',x:'#fff',in:'#DC1E35'}],
  ["Japan",{t:'o',bg:'#fff',dot:'#BC002D',cx:.5,r:.3}],["Bangladesh",{t:'o',bg:'#006A4E',dot:'#F42A41',cx:.45,r:.3}],
@@ -499,13 +553,14 @@ function flagURL(f){
     x.fillStyle='#11457E';x.beginPath();x.moveTo(0,0);x.lineTo(W/2,H/2);x.lineTo(0,H);x.fill()}
   else if(f.t==='gr'){const s=H/9;for(let i=0;i<9;i++){x.fillStyle=i%2?'#fff':'#0D5EAF';x.fillRect(0,i*s,W,s+1)}
     x.fillStyle='#0D5EAF';x.fillRect(0,0,5*s,5*s);x.fillStyle='#fff';x.fillRect(2*s,0,s,5*s);x.fillRect(0,2*s,5*s,s)}
+  if(f.star){const r=H*f.star.r,cx=W/2,cy=H/2;x.fillStyle=f.star.c;x.beginPath();for(let k=0;k<10;k++){const a=-Math.PI/2+k*Math.PI/5,rr=k%2?r*.4:r;x.lineTo(cx+Math.cos(a)*rr,cy+Math.sin(a)*rr)}x.closePath();x.fill()}
   if(f.t!=='ch'){x.strokeStyle='rgba(0,0,0,.25)';x.lineWidth=2;x.strokeRect(1,1,W-2,H-2)}
   return c.toDataURL();
 }
-const FLAG_LV={1:['Japan','France','Italy','Germany','Switzerland','Sweden','Greece','Ukraine','Romania','Poland'],
- 2:['Netherlands','Russia','Austria','Hungary','Bulgaria','Ireland','Belgium','Denmark','Norway','Finland','Czechia','Nigeria'],
- 3:['Estonia','Lithuania','Latvia','Colombia','Thailand','Indonesia','Mali','Peru','Guinea','Ivory Coast','Iceland','Bangladesh','Chad']};
-const FLAG_TRAP={Romania:'Chad',Chad:'Romania',Ireland:'Ivory Coast','Ivory Coast':'Ireland',Mali:'Guinea',Guinea:'Mali',Indonesia:'Poland',Poland:'Indonesia',
+const FLAG_LV={1:['Japan','France','Italy','Germany','Switzerland','Sweden','Greece','Ukraine','Romania','Poland','Vietnam'],
+ 2:['Netherlands','Russia','Austria','Hungary','Bulgaria','Ireland','Belgium','Denmark','Norway','Finland','Czechia','Nigeria','Senegal','Cameroon','Morocco','Armenia'],
+ 3:['Estonia','Lithuania','Latvia','Colombia','Thailand','Indonesia','Mali','Peru','Guinea','Ivory Coast','Iceland','Bangladesh','Chad','Gabon','Sierra Leone','Yemen','Mauritius','Palau','Somalia','Bolivia','Luxembourg']};
+const FLAG_TRAP={Senegal:'Mali',Cameroon:'Guinea',Morocco:'Vietnam',Vietnam:'Morocco',Somalia:'Vietnam',Gabon:'Sierra Leone','Sierra Leone':'Gabon',Luxembourg:'Netherlands',Bolivia:'Lithuania',Palau:'Bangladesh',Armenia:'Colombia',Romania:'Chad',Chad:'Romania',Ireland:'Ivory Coast','Ivory Coast':'Ireland',Mali:'Guinea',Guinea:'Mali',Indonesia:'Poland',Poland:'Indonesia',
  Netherlands:'Russia',Russia:'Netherlands',Italy:'Ireland',Norway:'Iceland',Iceland:'Norway',Sweden:'Finland',Lithuania:'Bolivia',Latvia:'Austria',Austria:'Latvia',Peru:'Austria',Colombia:'Ecuador',Bangladesh:'Japan',Japan:'Bangladesh'};
 const flags=byLv(FLAG_LV,(names,l)=>{const d=deck(names),pool=FLAGS.map(f=>f[0]);return()=>{const n=d(),f=FLAGS.find(x=>x[0]===n)[1];
   const t=l>1&&pool.includes(FLAG_TRAP[n])?FLAG_TRAP[n]:null;return{q:'Which country is this?',c:n,w:pickN(pool,2,n,t),img:flagURL(f),tag:'flag'}}});
@@ -513,31 +568,31 @@ const flags=byLv(FLAG_LV,(names,l)=>{const d=deck(names),pool=FLAGS.map(f=>f[0])
 /* ---- Science ---- */
 const PLANETS=['Mercury','Venus','Earth','Mars','Jupiter','Saturn','Uranus','Neptune'];
 const planets=byLv({1:[["The largest planet","Jupiter"],["Known as the Red Planet","Mars"],["Planet with the brightest rings","Saturn"],["Third planet from the Sun","Earth"],
-  ["Closest planet to the Sun","Mercury"],["The smallest planet","Mercury"]],
+  ["Closest planet to the Sun","Mercury"],["The smallest planet","Mercury"],["We live on this planet","Earth"],["Second planet from the Sun","Venus"],["Fourth planet from the Sun","Mars"],["Planet famous for its rings","Saturn"],["Named after the Roman goddess of love","Venus"]],
  2:[["The hottest planet","Venus"],["Farthest planet from the Sun","Neptune"],["Has the Great Red Spot","Jupiter"],["Named after the Roman god of war","Mars"],
-  ["Named after the Roman sea god","Neptune"],["Planet between Earth and Jupiter","Mars"]],
+  ["Named after the Roman sea god","Neptune"],["Planet between Earth and Jupiter","Mars"],["Planet with the most moons","Saturn"],["Often called Earth's twin","Venus"],["Fifth planet from the Sun","Jupiter"],["Seventh planet from the Sun","Uranus"]],
  3:[["Planet that spins on its side","Uranus"],["Its day is longer than its year","Venus"],["Light enough to float in water","Saturn"],["First found with a telescope (1781)","Uranus"],
-  ["Home of Olympus Mons, the tallest volcano","Mars"],["Has the fastest winds","Neptune"],["Fastest orbit around the Sun","Mercury"]]},
+  ["Home of Olympus Mons, the tallest volcano","Mars"],["Has the fastest winds","Neptune"],["Fastest orbit around the Sun","Mercury"],["Has a moon called Titan","Saturn"],["Has a moon called Triton","Neptune"],["Its moons are Phobos and Deimos","Mars"],["Has a moon called Europa","Jupiter"]]},
  list=>{const d=deck(list);return()=>{const [q,c]=d();return{q,c,w:pickN(PLANETS,2,c)}}});
-const ELEMENTS={1:[["H","Hydrogen"],["O","Oxygen"],["C","Carbon"],["N","Nitrogen"],["He","Helium"],["S","Sulfur"]],
- 2:[["Fe","Iron"],["Cu","Copper"],["Zn","Zinc"],["Cl","Chlorine"],["Mg","Magnesium"],["Al","Aluminium"],["Ca","Calcium"]],
- 3:[["Au","Gold"],["Ag","Silver"],["Na","Sodium"],["K","Potassium"],["Pb","Lead"],["Hg","Mercury"],["Sn","Tin"],["W","Tungsten"]]};
+const ELEMENTS={1:[["H","Hydrogen"],["O","Oxygen"],["C","Carbon"],["N","Nitrogen"],["He","Helium"],["S","Sulfur"],["Ne","Neon"]],
+ 2:[["Fe","Iron"],["Cu","Copper"],["Zn","Zinc"],["Cl","Chlorine"],["Mg","Magnesium"],["Al","Aluminium"],["Ca","Calcium"],["P","Phosphorus"],["Si","Silicon"],["Ni","Nickel"]],
+ 3:[["Au","Gold"],["Ag","Silver"],["Na","Sodium"],["K","Potassium"],["Pb","Lead"],["Hg","Mercury"],["Sn","Tin"],["W","Tungsten"],["Pt","Platinum"],["U","Uranium"]]};
 const ALL_EL=[1,2,3].flatMap(l=>ELEMENTS[l]);
-const EL_TRAP={K:'P',Na:'S',Ag:'Si',Au:'Ag',Pb:'Li',Hg:'Me',Sn:'Ti',W:'Tu',Fe:'Ir',Cu:'Co',Mg:'Mn',Cl:'C'};
+const EL_TRAP={P:'Ph',Si:'Sl',Ni:'N',Pt:'P',U:'Ur',K:'P',Na:'S',Ag:'Si',Au:'Ag',Pb:'Li',Hg:'Me',Sn:'Ti',W:'Tu',Fe:'Ir',Cu:'Co',Mg:'Mn',Cl:'C'};
 const elements=byLv(ELEMENTS,list=>{const d=deck(list);return()=>{const [s,n]=d();
   if(Math.random()<.5)return{q:`Which element is ${s}?`,c:n,w:pickN(ALL_EL.map(e=>e[1]),2,n)};
   return{q:`Chemical symbol for ${n.toUpperCase()}`,c:s,w:pickN(ALL_EL.map(e=>e[0]),2,s,EL_TRAP[s])}}});
 const body=fixedL({1:[["Organ that pumps blood","heart","lungs","liver"],["Organs we breathe with","lungs","kidneys","heart"],["We smell with our…","nose","ears","tongue"],
-  ["The body's control centre","brain","heart","stomach"],["We taste with our…","tongue","nose","teeth"],["Frame of bones in the body","skeleton","muscle","skin"]],
+  ["The body's control centre","brain","heart","stomach"],["We taste with our…","tongue","nose","teeth"],["Frame of bones in the body","skeleton","muscle","skin"],["We hear with our…","ears","eyes","nose"],["We see with our…","eyes","ears","hands"],["Hard white parts that chew food","teeth","nails","bones"],["Liquid pumped around the body","blood","water","air"],["Joint in the middle of the leg","knee","elbow","wrist"]],
  2:[["The body's largest organ","skin","liver","brain"],["Bones in an adult body","206","106","306"],["Teeth in a full adult set","32","28","24"],["Gas we breathe out","CO₂","O₂","H₂"],
-  ["Organs that filter blood","kidneys","lungs","stomach"],["Coloured part of the eye","iris","pupil","retina"],["The longest bone","femur","humerus","tibia"]],
+  ["Organs that filter blood","kidneys","lungs","stomach"],["Coloured part of the eye","iris","pupil","retina"],["The longest bone","femur","humerus","tibia"],["Where food goes after you swallow","stomach","lungs","heart"],["The backbone is also called the…","spine","skull","rib cage"],["Bones that protect the brain","skull","ribs","spine"],["Bones that protect the lungs","ribs","skull","pelvis"],["Vessels carrying blood back to the heart","veins","arteries","nerves"]],
  3:[["Tiny air sacs in the lungs","alveoli","bronchi","villi"],["Connects muscle to bone","tendon","ligament","cartilage"],["Cells that help blood clot","platelets","red cells","white cells"],
   ["Largest internal organ","liver","lungs","brain"],["Insulin is made in the…","pancreas","liver","kidneys"],["The smallest bone is in the…","ear","foot","hand"],
-  ["Pigment that colours skin","melanin","keratin","insulin"],["Cells that fight infection","white cells","red cells","platelets"]]});
+  ["Pigment that colours skin","melanin","keratin","insulin"],["Cells that fight infection","white cells","red cells","platelets"],["Muscle under the lungs for breathing","diaphragm","biceps","abdomen"],["The windpipe is also called the…","trachea","oesophagus","larynx"],["Red cells carry oxygen using…","haemoglobin","insulin","plasma"],["Liquid part of the blood","plasma","platelets","bile"],["Nerve cells are called…","neurons","nephrons","platelets"]]});
 
 /* ---- Informatics ---- */
 const binary=()=>{const L=LV(),bits=L+2,n=ri_([1,3,8][L-1],(1<<bits)-1),b=n.toString(2).padStart(bits,'0');
-  if(Math.random()<.55){const rev=parseInt(b.split('').reverse().join(''),2);const w=nearNums(n,[-1,1,2,-2]);if(rev!==n)w[0]=String(rev);
+  if(Math.random()<.55){const rev=parseInt(b.split('').reverse().join(''),2);const w=pickN(nearNums(n,[-1,1,2,-2,3]),2,String(n),rev!==n?String(rev):null);
     return{q:`${b}₂ in decimal`,c:String(n),w,code:'Binary'}}
   const flip=i=>b.split('').map((d,j)=>j===i?(d==='0'?'1':'0'):d).join('');const w=pickN(b.split('').map((_,i)=>flip(i)),2,b);
   return{q:`${n} in binary`,c:b,w,code:'Binary'}};
@@ -545,7 +600,7 @@ const python=()=>{const L=LV(),P='Python';
   const T={1:['len','concat','arith'],2:['floordiv','mod','pow','len'],3:['int','repeat','div','nested','bool','pow']}[L];const k=T[ri_(0,T.length-1)];
   if(k==='len'){const wd=['cat','hello','python','code','apple','robot','loop'][ri_(0,6)];return{q:`len("${wd}")`,c:String(wd.length),w:[String(wd.length-1),String(wd.length+1)],code:P}}
   if(k==='concat'){const a=['sun','ice','rain','foot'][ri_(0,3)],b=['day','cream','bow','ball'][ri_(0,3)];return{q:`"${a}" + "${b}"`,c:`"${a}${b}"`,w:[`"${a} ${b}"`,`"${b}${a}"`],code:P}}
-  if(k==='arith'){const a=ri_(2,9),b=ri_(2,5),c=ri_(2,4);return{q:`${a} + ${b} * ${c}`,c:String(a+b*c),w:pickN([String((a+b)*c),String(a+b+c),String(a*b+c)],2,String(a+b*c)),code:P}}
+  if(k==='arith'){const a=ri_(2,9),b=ri_(2,5),c=ri_(2,4);return{q:`${a} + ${b} * ${c}`,c:String(a+b*c),w:pickN([String((a+b)*c),String(a+b+c),String(a*b+c),String(a+b*c+1),String(a+b*c-1)],2,String(a+b*c)),code:P}}
   if(k==='floordiv'){const a=ri_(7,20),b=ri_(2,5),c=Math.floor(a/b);return{q:`${a} // ${b}`,c:String(c),w:pickN([String(+(a/b).toFixed(2)),String(c+1),String(a%b)],2,String(c)),code:P}}
   if(k==='mod'){const b=ri_(3,5),a=ri_(7,23),c=a%b;return{q:`${a} % ${b}`,c:String(c),w:pickN([String(Math.floor(a/b)),String(c+1),String(b),String(c+2)],2,String(c)),code:P}}
   if(k==='pow'){const a=ri_(2,L===3?6:4),b=ri_(2,3),c=a**b;return{q:`${a} ** ${b}`,c:String(c),w:pickN([String(a*b),String(c+a),String(a+b),String(c*2)],2,String(c)),code:P}}
@@ -554,16 +609,16 @@ const python=()=>{const L=LV(),P='Python';
   if(k==='div'){const [a,b,c,f]=[[10,4,'2.5','2'],[9,2,'4.5','4'],[7,2,'3.5','3'],[12,8,'1.5','1'],[5,2,'2.5','2']][ri_(0,4)];return{q:`${a} / ${b}`,c,w:[f,String(+f+1)],code:P}}
   if(k==='nested'){const o=[['len([1, [2, 3]])','2','3','1'],['len([[1, 2], [3, 4]])','2','4','1'],['[1, 2, 3][-1]','3','1','error'],['"code"[1]','"o"','"c"','"d"']][ri_(0,3)];return{q:o[0],c:o[1],w:[o[2],o[3]],code:P}}
   const o=[['bool("")','False','True','error'],['bool(0)','False','True','0'],['bool("0")','True','False','0'],['bool([])','False','True','[]']][ri_(0,3)];return{q:o[0],c:o[1],w:[o[2],o[3]],code:P}};
-const shortcuts=pairedL({1:[["COPY","Ctrl+C"],["PASTE","Ctrl+V"],["UNDO","Ctrl+Z"],["SAVE","Ctrl+S"],["CUT","Ctrl+X"],["SELECT ALL","Ctrl+A"]],
- 2:[["FIND","Ctrl+F"],["PRINT","Ctrl+P"],["REDO","Ctrl+Y"],["NEW TAB","Ctrl+T"],["BOLD","Ctrl+B"],["NEW DOCUMENT","Ctrl+N"]],
+const shortcuts=pairedL({1:[["COPY","Ctrl+C"],["PASTE","Ctrl+V"],["UNDO","Ctrl+Z"],["SAVE","Ctrl+S"],["CUT","Ctrl+X"],["SELECT ALL","Ctrl+A"],["REFRESH PAGE","F5"],["GET HELP","F1"],["PRINT","Ctrl+P"],["FIND","Ctrl+F"],["NEW TAB","Ctrl+T"]],
+ 2:[["FIND","Ctrl+F"],["PRINT","Ctrl+P"],["REDO","Ctrl+Y"],["NEW TAB","Ctrl+T"],["BOLD","Ctrl+B"],["NEW DOCUMENT","Ctrl+N"],["UNDERLINE","Ctrl+U"],["ITALIC","Ctrl+I"],["ZOOM IN","Ctrl++"]],
  3:[["CLOSE TAB","Ctrl+W"],["REOPEN CLOSED TAB","Ctrl+Shift+T"],["SWITCH APPS","Alt+Tab"],["TASK MANAGER","Ctrl+Shift+Esc"],["LOCK PC","Win+L"],
-  ["SHOW DESKTOP","Win+D"],["SCREENSHOT TOOL","Win+Shift+S"],["RENAME FILE","F2"]]},k=>`Shortcut to ${k}`);
+  ["SHOW DESKTOP","Win+D"],["SCREENSHOT TOOL","Win+Shift+S"],["RENAME FILE","F2"],["OPEN FILE EXPLORER","Win+E"],["OPEN RUN BOX","Win+R"],["CLOSE WINDOW","Alt+F4"]]},k=>`Shortcut to ${k}`);
 const units=fixedL({1:[["Bits in 1 byte","8","4","16"],["Binary uses 0 and…","1","2","10"],["Smallest unit of data","bit","byte","nibble"],
-  ["Biggest of these","gigabyte","megabyte","kilobyte"],["Bits in 2 bytes","16","8","32"]],
+  ["Biggest of these","gigabyte","megabyte","kilobyte"],["Bits in 2 bytes","16","8","32"],["Smallest of these","kilobyte","megabyte","gigabyte"],["Internet speed is measured in…","Mbps","MB","°C"],["A song file is usually a few…","megabytes","terabytes","bits"],["Bytes in 1 kilobyte (kB)","1000","100","10"],["Which holds more?","1 TB","1 GB","1 MB"],["Bits in 4 bytes","32","16","24"]],
  2:[["Bits in a nibble","4","8","2"],["Hex A in decimal","10","11","16"],["Hex F in decimal","15","16","14"],["Bytes in 1 KiB","1024","1000","512"],
-  ["Biggest of these","terabyte","gigabyte","petabit"],["Hex 10 in decimal","16","10","20"]],
+  ["Biggest of these","terabyte","gigabyte","petabit"],["Hex 10 in decimal","16","10","20"],["Hex B in decimal","11","12","10"],["Bits in 3 bytes","24","12","32"],["Decimal 12 in hex","C","B","12"]],
  3:[["Hex FF in decimal","255","256","240"],["Largest value in 1 byte","255","256","128"],["Bits in 4 bytes","32","16","64"],["Hex 1F in decimal","31","25","15"],
-  ["KiB in 1 MiB","1024","1000","512"],["Different values in 1 byte","256","255","128"],["Hex 2A in decimal","42","32","24"]]});
+  ["KiB in 1 MiB","1024","1000","512"],["Different values in 1 byte","256","255","128"],["Hex 2A in decimal","42","32","24"],["Hex 64 in decimal","100","64","96"],["Decimal 200 in hex","C8","B8","D0"],["Bits needed for 0–255","8","16","7"]]});
 
 /* ---- Subjects & topics ---- */
 const SUBJECTS=[
@@ -603,8 +658,11 @@ SUBJECTS.push({id:'mix',name:'Mix it up',g:'✳',blurb:'Questions from every sub
   {id:'mix-all',name:'Surprise me',bl:'any topic, any subject',d:2,gen:()=>ALL[ri_(0,ALL.length-1)].gen()},
   {id:'mix-hard',name:'Hard mix',bl:'only the toughest topics',d:3,gen:()=>{const p=ALL.filter(t=>t.d===3);return p[ri_(0,p.length-1)].gen()}}]});
 
+function makeRunQs(){const out=[],seen=new Set();let dup=0;
+  while(out.length<RUN_CAP&&dup<40){const Q=curTopic().gen(),k=Q.q+'|'+Q.c;if(seen.has(k)){dup++;continue}seen.add(k);dup=0;out.push(Q)}
+  return out}
 function buildGate(){
-  const Q=curTopic().gen();const c=String(Q.c);const seen=new Set([c]);
+  const Q=runQs[qIdx++];if(!Q)return null;const c=String(Q.c);const seen=new Set([c]);
   const raw=Q.w.slice(0,2);while(raw.length<2)raw.push(c);
   const w=raw.map(v=>{let x=String(v);while(seen.has(x))x=isNaN(+x)?x+'s':String(+x+1);seen.add(x);return x});
   const ans=shuffle([c,...w]);
@@ -697,7 +755,7 @@ const curSubject=()=>SUBJECTS.find(s=>s.id===cfg.subject)||SUBJECTS[0];
 const curTopic=()=>{const s=curSubject();return s.topics.find(t=>t.id===cfg.topic)||s.topics[0]};
 const topicDiff=tp=>cfg.diffs[tp.id]||tp.d;
 const DIFF=()=>topicDiff(curTopic());
-const bestKey=(id,d)=>`lanefall-v4-best-${id||curTopic().id}-d${d||DIFF()}`;
+const bestKey=(id,d)=>`lanefall-v5-best-${id||curTopic().id}-d${d||DIFF()}`;
 const getBest=(id,d)=>{try{return +localStorage.getItem(bestKey(id,d))||0}catch(e){return 0}};
 const saveCfg=()=>{try{localStorage.setItem('lanefall-cfg2',JSON.stringify(cfg))}catch(e){}};
 const DIFFNAME=['','Easy','Medium','Hard'];
@@ -879,12 +937,13 @@ const lowMat=new THREE.MeshStandardMaterial({color:0xcfd8e2,roughness:.5,emissiv
 
 const rows=new Map();let genTo=-1,nextEvent=16,nextGate=34,trackLive=false;
 let seed=1;const rnd=()=>(seed=(seed*16807)%2147483647)/2147483647;
-const level=i=>Math.min(1,i/600)*(.6+DIFF()*.2);
+const level=i=>Math.min(1,Math.max(i/600,prog()))*(.6+DIFF()*.2);
 function genRow(i){
   const r={floor:[1,1,1],obs:[0,0,0],gate:null};
   if(!trackLive){rows.set(i,r);return}
-  if(i===nextGate){if(trackLive)r.gate=buildGate();nextGate=i+64;nextEvent=Math.max(nextEvent,i+14);rows.set(i,r);return}
-  if(i>=nextEvent&&i<nextGate-32){
+  if(i===finishRow){r.finish=true;rows.set(i,r);return}
+  if(i===nextGate){r.gate=buildGate();nextGate=i+64;if(qIdx>=runQs.length){finishRow=i+22;nextGate=1e9}nextEvent=Math.max(nextEvent,i+14);rows.set(i,r);return}
+  if(i>=nextEvent&&i<nextGate-32&&finishRow<0){
     const L=level(i),free=Math.floor(rnd()*3),t=rnd();r.ev=1;
     if(t<.34){for(let l=0;l<3;l++)if(l!==free&&(rnd()<.5+L*.5))r.obs[l]=2;if(r.obs.every(o=>!o))r.obs[(free+1)%3]=2}
     else if(t<.58){for(let l=0;l<3;l++)if(l!==free)r.floor[l]=0;rows.set(i+1,{floor:r.floor.slice(),obs:[0,0,0],gate:null})}
@@ -929,6 +988,14 @@ function panelTex(text){
   lines.forEach((ln,i)=>x.fillText(ln,192,132+(i-(lines.length-1)/2)*fs*1.1));
   const t=new THREE.CanvasTexture(c);t.encoding=THREE.sRGBEncoding;t.anisotropy=4;return t;
 }
+function makeFinish(z){const g=new THREE.Group();g.position.z=z;
+  const tex=canvasTex(512,80,(x)=>{const sq=20;for(let r=0;r<4;r++)for(let c=0;c<26;c++){x.fillStyle=(r+c)%2?'#f4f6f8':'#14181f';x.fillRect(c*sq,r*sq,sq,sq)}
+    x.fillStyle='#14181f';x.fillRect(176,12,160,56);x.fillStyle='#ffd23f';x.font='600 34px "IBM Plex Mono", Menlo, monospace';x.textAlign='center';x.textBaseline='middle';x.fillText('FINISH',256,42)});
+  const ban=new THREE.Mesh(new THREE.PlaneGeometry(5.4,.84),new THREE.MeshBasicMaterial({map:tex,side:THREE.DoubleSide}));ban.position.y=2.9;g.add(ban);
+  [-2.7,2.7].forEach(x=>{const p=new THREE.Mesh(new THREE.BoxGeometry(.08,3.3,.08),barMat);p.position.set(x,1.65,0);g.add(p)});
+  const ft=canvasTex(256,32,(x)=>{for(let r=0;r<2;r++)for(let c=0;c<16;c++){x.fillStyle=(r+c)%2?'#f4f6f8':'#14181f';x.fillRect(c*16,r*16,16,16)}});
+  const strip=new THREE.Mesh(new THREE.PlaneGeometry(5.1,.64),new THREE.MeshBasicMaterial({map:ft,polygonOffset:true,polygonOffsetFactor:-2}));strip.rotation.x=-Math.PI/2;strip.position.y=.006;g.add(strip);
+  scene.add(g);return g}
 function makeGateMesh(gate,z){
   const g=new THREE.Group();g.position.z=z;
   const bar=new THREE.Mesh(barGeo,barMat);bar.position.y=2.6;g.add(bar);
@@ -953,6 +1020,7 @@ function syncTrack(cur){
     for(let l=0;l<3;l++){const on=!!d.floor[l];s.f[l].visible=on;s.o[l].visible=d.obs[l]===2;s.lo[l].visible=d.obs[l]===1;
       const fr=on&&!nx.floor[l],bk=on&&!pv.floor[l];s.ed[l][0].visible=s.ed[l][2].visible=fr;s.ed[l][1].visible=s.ed[l][3].visible=bk;s.ed[l][4].visible=on&&d.obs[l]===1}
     if(d.gate&&!d.gate.mesh){makeGateMesh(d.gate,-i*TILE);d.gate.row=i;gates.push(d.gate)}
+    if(d.finish&&!finishMesh)finishMesh=makeFinish(-i*TILE);
   }
   for(let k=gates.length-1;k>=0;k--)if(gates[k].row<cur-6){dropGate(gates[k]);gates.splice(k,1)}
 }
@@ -1014,7 +1082,9 @@ applyChar();applyTheme();
 // states: menu · count · run · paused · dead
 let state='menu',dist=0,pts=0,speed=0,lane=1,lx=0,y=0,vy=0,air=false,shake=0,slow=1,deadT=0,squash=0,tilt=0,falling=false,boostT=0,countT=0,pausedFrom='run';
 let right=0,asked=0,streak=0,bestStreak=0,missed=[],best=0,barriers=0,lastPassed=0;
-const BASE=[0,8.5,10,11.5],BOOST=3;
+let hearts=3,runQs=[],qIdx=0,finishRow=-1,finishMesh=null;
+const BASE=[0,12.5,14,15.5],BOOST=3,RUN_CAP=15;
+const prog=()=>runQs.length?asked/runQs.length:0;
 
 const show=(id,on)=>$(id).classList.toggle('off',!on);
 function panel(which){['menu','pauseP','over'].forEach(p=>$(p).hidden=p!==which);show('sheet',!!which);if(which!=='menu')$('sheet').classList.remove('peek');$('sheet').scrollTop=0;$('scrim').style.opacity=which?0:(curTheme().light?1:.5)}
@@ -1025,22 +1095,37 @@ function showDelta(txt,cls){const d=$('delta');d.textContent=txt;d.className=cls
 function flash(color){const f=$('flash');f.style.background=color;f.style.transition='none';f.style.opacity=.16;
   requestAnimationFrame(()=>requestAnimationFrame(()=>{f.style.transition='opacity .7s';f.style.opacity=0}))}
 function bump(){const s=$('score');s.classList.remove('bump');void s.offsetWidth;s.classList.add('bump')}
-function paintHud(){$('rightN').textContent=right;$('askedN').textContent=asked;$('streakN').textContent=streak;$('streakChip').classList.toggle('hot',streak>=3)}
+const HEART='<path d="M12 21s-7.5-4.6-9.6-9.2C.9 8.4 3 4.5 6.8 4.5c2.1 0 3.6 1.2 5.2 3 1.6-1.8 3.1-3 5.2-3 3.8 0 5.9 3.9 4.4 7.3C19.5 16.4 12 21 12 21z"/>';
+function paintHud(){const hc=$('heartsChip');hc.innerHTML=[0,1,2].map(k=>`<svg viewBox="0 0 24 24" class="${k<hearts?'':'lost'}">${HEART}</svg>`).join('');hc.setAttribute('aria-label',`${hearts} lives left`);
+  $('progN').textContent=asked;$('progT').textContent=runQs.length||'–';$('streakN').textContent=streak;$('streakChip').classList.toggle('hot',streak>=3)}
 
 function reset(live){
   trackLive=!!live;
   dist=0;pts=0;speed=BASE[DIFF()];lane=1;lx=0;y=0;vy=0;air=false;falling=false;shake=0;slow=1;squash=0;tilt=0;boostT=0;
   right=0;asked=0;streak=0;bestStreak=0;missed=[];barriers=0;lastPassed=0;
+  hearts=3;runQs=live?makeRunQs():[];qIdx=0;finishRow=-1;if(finishMesh){scene.remove(finishMesh);finishMesh=null}
   gates.forEach(dropGate);gates.length=0;
   rows.clear();genTo=-1;nextEvent=16;nextGate=34;seed=(Math.random()*1e9|0)+1;
   slots.forEach(s=>s.row=-999);hero.visible=true;shards.forEach(s=>s.visible=false);pivot.rotation.set(0,0,0);
   best=getBest();$('score').textContent='0';paintHud();
 }
-function start(){reset(true);panel(null);show('hud',true);show('qbox',false);state='count';countT=3.2;tickCount(3);paintAudio()}
+const TUT=[{g:'left',b:'Swipe left',s:'to change lane'},{g:'right',b:'Swipe right',s:'to change lane'},{g:'up',b:'Swipe up',s:'or tap, to jump'}];
+let tutStep=0,tutLock=false;
+function showGuide(){state='tutor';tutStep=0;tutLock=false;paintTutor();show('tutor',true)}
+function hideGuide(){show('tutor',false)}
+function paintTutor(){const t=TUT[tutStep],el_=$('tutor');el_.dataset.g=t.g;el_.classList.remove('yes');$('tutB').textContent=t.b;$('tutS').textContent=t.s;
+  [...el_.querySelectorAll('.tdots i')].forEach((d,k)=>d.className=k<tutStep?'done':k===tutStep?'on':'')}
+function tutorInput(kind){if(state!=='tutor'||tutLock)return;const t=$('tutor');
+  if(kind!==TUT[tutStep].g){t.classList.remove('nope');void t.offsetWidth;t.classList.add('nope');return}
+  if(kind==='up')doJump();else doMove(kind==='left'?-1:1);
+  S.pass();t.classList.add('yes');t.querySelectorAll('.tdots i')[tutStep].className='done';tutLock=true;
+  setTimeout(()=>{tutLock=false;if(state!=='tutor')return;tutStep++;if(tutStep>=TUT.length)endTutor();else paintTutor()},520)}
+function endTutor(){if(state!=='tutor')return;hideGuide();state='run';tickCount(0)}
+function start(){reset(true);panel(null);show('hud',true);show('qbox',false);paintAudio();showGuide()}
 function tickCount(n){const c=$('count');c.textContent=n||'Go';c.classList.remove('off','tick');void c.offsetWidth;c.classList.add('tick');S.tick(n);
   if(!n)setTimeout(()=>c.classList.add('off'),600)}
-function toMenu(){reset(false);state='menu';show('hud',false);show('qbox',false);show('count',false);openTopics();panel('menu')}
-function pause(){if(state!=='run'&&state!=='count')return;pausedFrom=state;state='paused';show('count',false);
+function toMenu(){hideGuide();reset(false);state='menu';show('hud',false);show('qbox',false);show('count',false);openTopics();panel('menu')}
+function pause(){if(state!=='run'&&state!=='count')return;hideGuide();pausedFrom=state;state='paused';show('count',false);
   $('pScore').textContent=Math.floor(pts);$('pLine').textContent=`${curSubject().name} · ${curTopic().name} · ${DIFFNAME[DIFF()]}`;panel('pauseP');paintAudio()}
 function resume(){if(state!=='paused')return;panel(null);state='count';countT=pausedFrom==='count'?3.2:1.2;tickCount(pausedFrom==='count'?3:1);paintAudio()}
 $('startBtn').onclick=start;$('againBtn').onclick=start;$('menuBtn').onclick=toMenu;
@@ -1048,15 +1133,17 @@ $('pause').onclick=pause;$('resumeBtn').onclick=resume;$('quitBtn').onclick=()=>
 document.addEventListener('visibilitychange',()=>{if(document.hidden)pause()});
 
 function die(cause){
-  if(state!=='run')return;state='dead';deadT=0;show('qbox',false);
+  if(state!=='run')return;hideGuide();state='dead';deadT=0;show('qbox',false);
   if(cause==='hit'){shake=.6;slow=.25;hero.visible=false;S.crash();
     shards.forEach(s=>{s.visible=true;s.position.set(lx+(Math.random()-.5)*.5,y+.2+Math.random()*.8,-dist+(Math.random()-.5)*.5);
       s.userData.v=new THREE.Vector3((Math.random()-.5)*6,2+Math.random()*5,2+Math.random()*4);s.userData.r=new THREE.Vector3(Math.random()*8,Math.random()*8,0)})}
   else if(cause==='fall'){shake=.25;slow=.25}
+  else if(cause==='hearts'){shake=.35;slow=.35}
+  let bonus=0;if(cause==='done'){bonus=hearts*10;pts+=bonus;S.correct()}
   const sc=Math.floor(pts),isBest=sc>best&&sc>0;
   if(isBest){best=sc;try{localStorage.setItem(bestKey(),best)}catch(e){}}
   setTimeout(()=>{
-    $('rCause').textContent={hit:'You hit a wall',fall:'You fell off the track',quit:'Run ended'}[cause];
+    $('rCause').textContent={hit:'You hit a wall',fall:'You fell off the track',quit:'Run ended',hearts:'Out of hearts',done:bonus?`Topic complete · +${bonus} heart bonus`:'Topic complete'}[cause];
     $('rScore').textContent=sc;
     const pb=$('rBest');pb.textContent=isBest?'New best':`Best ${best}`;pb.classList.toggle('best',isBest);
     $('rTopic').textContent=`${curSubject().name} · ${curTopic().name} · ${DIFFNAME[DIFF()]}`;
@@ -1080,23 +1167,27 @@ function resolveGate(g,li){
     showDelta(`+${add}`,'good');
   }else{
     streak=0;missed.push({q:g.img?'This flag':g.q,img:g.img,answer:g.answer,picked:g.ans[li]});
-    const sub=3;pts=Math.max(0,pts-sub);shake=.35;flash('#ff6b5a');S.wrong();
-    showDelta(`−${sub}`,'bad');
+    hearts--;shake=.35;flash('#ff6b5a');S.wrong();showDelta('−1 ♥','bad');
+    const hc=$('heartsChip');hc.classList.remove('hit');void hc.offsetWidth;hc.classList.add('hit');
   }
   paintHud();show('qbox',false);
+  if(hearts<=0)die('hearts');
 }
-function jump(){if(state==='run'&&!air&&!falling){vy=8.2;air=true;squash=-.25;S.jump()}}
-function move(d){if(state!=='run'||falling)return;const n=Math.max(0,Math.min(2,lane+d));if(n!==lane){lane=n;tilt=-d*.35;S.lane()}}
+function doJump(){if(!air&&!falling){vy=8.2;air=true;squash=-.25;S.jump()}}
+function doMove(d){const n=Math.max(0,Math.min(2,lane+d));if(n!==lane){lane=n;tilt=-d*.35;S.lane()}}
+function jump(){if(state==='tutor')return tutorInput('up');if(state==='run')doJump()}
+function move(d){if(state==='tutor')return tutorInput(d<0?'left':'right');if(state!=='run'||falling)return;doMove(d)}
+$('skipTut').onclick=endTutor;
 
 const cv=R.domElement;let px=0,py=0,pt=0,pid=null,swiped=false;
 cv.addEventListener('pointerdown',e=>{pid=e.pointerId;px=e.clientX;py=e.clientY;pt=performance.now();swiped=false});
-cv.addEventListener('pointermove',e=>{if(e.pointerId!==pid||swiped||state!=='run')return;const dx=e.clientX-px,dy=e.clientY-py;
+cv.addEventListener('pointermove',e=>{if(e.pointerId!==pid||swiped||(state!=='run'&&state!=='tutor'))return;const dx=e.clientX-px,dy=e.clientY-py;
   if(Math.abs(dx)>26&&Math.abs(dx)>Math.abs(dy)){move(dx>0?1:-1);swiped=true}else if(dy<-26&&-dy>Math.abs(dx)){jump();swiped=true}});
-cv.addEventListener('pointerup',e=>{if(e.pointerId!==pid)return;pid=null;if(state==='run'&&!swiped&&performance.now()-pt<300)jump()});
+cv.addEventListener('pointerup',e=>{if(e.pointerId!==pid)return;pid=null;if((state==='run'||state==='tutor')&&!swiped&&performance.now()-pt<300)jump()});
 addEventListener('keydown',e=>{if(e.repeat)return;
   if(e.code==='Escape'||e.code==='KeyP'){state==='paused'?resume():pause();return}
   if(state==='dead'&&deadT>.9&&e.code==='Enter'){start();return}
-  if(state!=='run')return;
+  if(state!=='run'&&state!=='tutor')return;
   if(e.code==='ArrowLeft'||e.code==='KeyA')move(-1);if(e.code==='ArrowRight'||e.code==='KeyD')move(1);
   if(e.code==='ArrowUp'||e.code==='Space'||e.code==='KeyW'){e.preventDefault();jump()}});
 
@@ -1117,7 +1208,7 @@ function frame(){
   const boosting=false;
 
   if(state==='run'){
-    speed=Math.min(20,BASE[DIFF()]+dist*.015);
+    speed=Math.min(27,BASE[DIFF()]+dist*.012+prog()*6);
     dist+=speed*dt;
     const passed=Math.floor((dist-TILE*.6)/TILE);
     while(lastPassed<passed){lastPassed++;const r=rows.get(lastPassed);if(r&&r.ev){pts+=1;barriers++;S.pass();bump()}}
@@ -1128,7 +1219,7 @@ function frame(){
   const z=-dist,ri=Math.round(dist/TILE),d=row(ri);
   const li=LANES.reduce((b,v,i)=>Math.abs(v-lx)<Math.abs(LANES[b]-lx)?i:b,0);
 
-  if(state==='run'||state==='menu'||state==='count'){
+  if(state==='run'||state==='menu'||state==='count'||state==='tutor'){
     vy-=24*dt;y+=vy*dt;
     const ground=!falling&&(d.floor[li]||boosting||state!=='run');
     if(y<=0&&ground&&y>-.3){if(air){squash=.3;if(state==='run')S.land()}y=0;vy=0;air=false}
@@ -1137,6 +1228,7 @@ function frame(){
       const dz=Math.abs(z+ri*TILE),o=d.obs[li];
       if(!boosting){if(o===2&&dz<1.05)die('hit');else if(o===1&&dz<.6&&y<.5)die('hit')}
       if(state==='run'&&d.gate&&!d.gate.done&&z<=-ri*TILE)resolveGate(d.gate,li);
+      if(state==='run'&&finishRow>=0&&z<=-finishRow*TILE)die('done');
       if(falling&&y<-4)die('fall');
     }
   }else if(state==='dead'&&falling){vy-=24*dt;y+=vy*dt}
