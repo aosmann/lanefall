@@ -1,0 +1,14 @@
+{
+  "contract": 1,
+  "id": "lanefall",
+  "name": "Lanefall",
+  "pitch": "Run the lanes. Answer on the move.",
+  "description": "A 3D runner where every question is a gate. Swipe into the lane with the right answer, jump the barriers, keep your hearts.",
+  "color": "#1d2638",
+  "icon": "icon-512.png",
+  "bank": "EduQ",
+  "score": "points",
+  "settings": [
+    {"key": "level", "label": "Difficulty", "options": [[1, "Easy"], [2, "Medium"], [3, "Hard"]], "default": "topic"}
+  ]
+}

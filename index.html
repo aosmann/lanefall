@@ -973,7 +973,7 @@ function resolveGate(g,li){
     hearts--;shake=.35;flash('#ff6b5a');S.wrong();showDelta('−1 ♥','bad');
     const hc=$('heartsChip');hc.classList.remove('hit');void hc.offsetWidth;hc.classList.add('hit');
   }
-  paintHud();show('qbox',false);
+  paintHud();show('qbox',false);toParent({type:'edu-progress',game:'lanefall',score:Math.floor(pts),right,asked});
   if(hearts<=0)die('hearts');
 }
 function doJump(){if(!air&&!falling){vy=8.2;air=true;squash=-.25;S.jump()}}
@@ -994,11 +994,24 @@ addEventListener('keydown',e=>{if(e.repeat)return;
   if(e.code==='ArrowLeft'||e.code==='KeyA')move(-1);if(e.code==='ArrowRight'||e.code==='KeyD')move(1);
   if(e.code==='ArrowUp'||e.code==='Space'||e.code==='KeyW'){e.preventDefault();jump()}});
 
+/* ======================= PORTAL EMBED (edugames contract v1) =======================
+   Opened by the portal as ?topic=<id>&level=1-3&lock=1 → settings come from the portal and the run starts at once.
+   lock=1 (class mode): no replay, no topic menu. Posts edu-ready on load, edu-progress after every answer, edu-result at the end. */
+const EMBED=(()=>{const p=new URLSearchParams(location.search);if(!p.get('topic'))return null;
+  return{topic:p.get('topic'),level:+p.get('level')||0,time:+p.get('time')||0,lock:p.get('lock')==='1'}})();
+const toParent=m=>{try{if(window.parent!==window)window.parent.postMessage(m,'*')}catch(e){}};
+function applyEmbed(){if(!EMBED)return false;const s=SUBJECTS.find(s=>s.topics.some(t=>t.id===EMBED.topic));if(!s)return false;
+  cfg.subject=s.id;cfg.topic=EMBED.topic;if([1,2,3].includes(EMBED.level))cfg.diffs[EMBED.topic]=EMBED.level;
+  if(EMBED.lock){$('againBtn').hidden=true;$('menuBtn').hidden=true;const n=document.createElement('p');n.textContent='Result sent to your teacher.';
+    n.style.cssText='margin:0;text-align:center;font-weight:700;opacity:.8';$('againBtn').parentNode.prepend(n)}
+  return true}
+
 /* ======================= LOOP ======================= */
 const clock=new THREE.Clock();let t=0;
 const camPos=new THREE.Vector3(0,3.4,7),look=new THREE.Vector3();
 const optEls=[...document.querySelectorAll('#opts span')];let shownGate=null;
 paintAudio();reset(false);syncTrack(0);go('scrHome');
+if(applyEmbed())start();toParent({type:'edu-ready',game:'lanefall'});
 function frame(){
   requestAnimationFrame(frame);
   const raw=Math.min(clock.getDelta(),.05);
