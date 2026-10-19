@@ -29,7 +29,7 @@
 *{box-sizing:border-box}
 html,body{height:100%;margin:0;overflow:hidden;background:#06090d;color:var(--ink);
   -webkit-user-select:none;user-select:none;-webkit-touch-callout:none;touch-action:none;-webkit-tap-highlight-color:transparent}
-canvas{display:block;position:fixed;inset:0;width:100%;height:100%}
+canvas{display:block;position:fixed;left:0;top:0;width:100vw;height:100vh;height:100lvh}
 button{font:inherit;color:inherit}
 button:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
 .ui{position:fixed;left:0;right:0;pointer-events:none;
@@ -910,16 +910,19 @@ function paintAudio(){
 $('mute').onclick=()=>{initAudio();const on=!(A.music||A.sfx);A.music=A.sfx=on;paintAudio()};
 
 /* ======================= RENDERER ======================= */
-const W=()=>innerWidth,H=()=>innerHeight;
-const R=new THREE.WebGLRenderer({antialias:true});
-R.setPixelRatio(Math.min(devicePixelRatio,2));R.setSize(W(),H());
+// size from the canvas's own CSS box (100lvh): on iPhone home-screen apps innerHeight stops short of the bottom edge
+const W=()=>Math.max(innerWidth,(R&&R.domElement.clientWidth)||0),H=()=>Math.max(innerHeight,(R&&R.domElement.clientHeight)||0);
+let R=null;
+R=new THREE.WebGLRenderer({antialias:true});
+R.setPixelRatio(Math.min(devicePixelRatio,2));
 R.outputEncoding=THREE.sRGBEncoding;R.toneMapping=THREE.ACESFilmicToneMapping;R.toneMappingExposure=1.2;
 R.shadowMap.enabled=true;R.shadowMap.type=THREE.PCFSoftShadowMap;
 document.body.prepend(R.domElement);
 const scene=new THREE.Scene();
 const FOG=0x0d131b;scene.background=new THREE.Color(FOG);scene.fog=new THREE.Fog(FOG,14,62);
 const cam=new THREE.PerspectiveCamera(58,W()/H(),.1,150);
-addEventListener('resize',()=>{cam.aspect=W()/H();cam.updateProjectionMatrix();R.setSize(W(),H())});
+function fit(){R.setSize(W(),H(),false);cam.aspect=W()/H();cam.updateProjectionMatrix()}
+fit();addEventListener('resize',fit);addEventListener('orientationchange',()=>setTimeout(fit,300));setTimeout(fit,500);
 const hemi=new THREE.HemisphereLight(0x9fb4d0,0x05070a,.5);scene.add(hemi);
 const keyL=new THREE.DirectionalLight(0xd6e4ff,1.7);keyL.castShadow=true;keyL.shadow.mapSize.set(1024,1024);
 Object.assign(keyL.shadow.camera,{left:-8,right:8,top:14,bottom:-14,far:60});keyL.shadow.camera.updateProjectionMatrix();
@@ -1121,7 +1124,9 @@ function tutorInput(kind){if(state!=='tutor'||tutLock)return;const t=$('tutor');
   S.pass();t.classList.add('yes');t.querySelectorAll('.tdots i')[tutStep].className='done';tutLock=true;
   setTimeout(()=>{tutLock=false;if(state!=='tutor')return;tutStep++;if(tutStep>=TUT.length)endTutor();else paintTutor()},520)}
 function endTutor(){if(state!=='tutor')return;hideGuide();state='run';tickCount(0)}
-function start(){reset(true);panel(null);show('hud',true);show('qbox',false);paintAudio();showGuide()}
+let tutorSeen=false;
+function start(){reset(true);panel(null);show('hud',true);show('qbox',false);paintAudio();
+  if(!tutorSeen){tutorSeen=true;showGuide()}else{state='count';countT=3.2;tickCount(3)}}
 function tickCount(n){const c=$('count');c.textContent=n||'Go';c.classList.remove('off','tick');void c.offsetWidth;c.classList.add('tick');S.tick(n);
   if(!n)setTimeout(()=>c.classList.add('off'),600)}
 function toMenu(){hideGuide();reset(false);state='menu';show('hud',false);show('qbox',false);show('count',false);openTopics();panel('menu')}
