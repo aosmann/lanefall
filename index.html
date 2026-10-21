@@ -414,7 +414,7 @@ const {SUBJECTS,SICON,SHUE,DIFFNAME,stream,ri:ri_}=EduQ;
 // the bank lives in questions.js (window.EduQ), shared with the other games of the portal
 // a run is 15 distinct questions; "3 × 4" and "4 × 3" count as the same one
 const qid=Q=>{const m=Q.q.replace(/\s*=\s*\?\s*$/,'').trim().match(/^(-?\d+)\s*([×+])\s*(-?\d+)$/);return(m?[m[1],m[3]].sort().join(m[2]):Q.q)+'|'+Q.answer+'|'+(Q.img||'')};
-function makeRunQs(){const next=stream(curTopic(),DIFF()),out=[],seen=new Set();let dup=0;
+function makeRunQs(){const next=stream(curTopic(),DIFF(),EMBED_REG?{regions:EMBED_REG}:undefined),out=[],seen=new Set();let dup=0;
   while(out.length<RUN_CAP&&dup<40){const Q=next(),k=qid(Q);if(seen.has(k)){dup++;continue}seen.add(k);dup=0;out.push(Q)}
   return out}
 function buildGate(){const Q=runQs[qIdx++];return Q?Object.assign({done:false,mesh:null},Q):null}
@@ -593,11 +593,12 @@ function renderTopics(){
   $('subName').textContent=s.name;
   const box=$('topics');box.innerHTML='';
   s.topics.forEach(tp=>{const b=el('button','row tp');b.type='button';b.id='topic-'+tp.id;b.setAttribute('aria-pressed',tp.id===cfg.topic);
-    const tx=el('span','tx');tx.append(el('strong',null,tp.name),el('span',null,tp.bl));
+    const tx=el('span','tx');tx.append(el('strong',null,tp.name),el('span',null,tp.regions&&EduQ.regionLabel?EduQ.regionLabel(EduQ.getRegions(tp.id)):tp.bl));
     const dd=topicDiff(tp),side=el('span','side');
     const bs=getBest(tp.id,dd);if(bs)side.append(el('span','best',`best ${bs}`));
     b.append(el('span','radio'),tx,side);
     b.onclick=()=>{cfg.topic=tp.id;saveCfg();renderTopics()};box.append(b)});
+  {const old=document.getElementById('regPick');if(old)old.remove();const pk=EduQ.regionPicker&&EduQ.regionPicker(t,{onChange:renderTopics});if(pk){pk.id='regPick';box.after(pk)}}
   $('startBtn').textContent=`Start · ${t.name}`;
   const dd=topicDiff(t);document.querySelectorAll('#diffSeg button').forEach(b=>b.setAttribute('aria-pressed',+b.dataset.d===dd));
 }
@@ -999,6 +1000,8 @@ addEventListener('keydown',e=>{if(e.repeat)return;
    lock=1 (class mode): no replay, no topic menu. Posts edu-ready on load, edu-progress after every answer, edu-result at the end. */
 const EMBED=(()=>{const p=new URLSearchParams(location.search);if(!p.get('topic'))return null;
   return{topic:p.get('topic'),level:+p.get('level')||0,time:+p.get('time')||0,lock:p.get('lock')==='1'}})();
+/* continents from the portal (class mode); no regions param = all continents */
+const EMBED_REG=EMBED?(EduQ.parseRegions?EduQ.parseRegions(new URLSearchParams(location.search).get('regions'))||EduQ.REGIONS.map(r=>r.id):null):null;
 const toParent=m=>{try{if(window.parent!==window)window.parent.postMessage(m,'*')}catch(e){}};
 function applyEmbed(){if(!EMBED)return false;const s=SUBJECTS.find(s=>s.topics.some(t=>t.id===EMBED.topic));if(!s)return false;
   cfg.subject=s.id;cfg.topic=EMBED.topic;if([1,2,3].includes(EMBED.level))cfg.diffs[EMBED.topic]=EMBED.level;
