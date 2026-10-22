@@ -583,7 +583,7 @@ function swatchEl(t){const i=el('img','mini thumb');i.src=themeThumb(t);i.alt=''
 function renderSubjects(){
   const box=$('subjects');box.innerHTML='';
   SUBJECTS.forEach(s=>{const b=el('button','tile subj-t');b.type='button';b.id='subj-'+s.id;b.style.setProperty('--h',SHUE[s.id]);
-    const tx=el('span','tx');tx.append(el('strong',null,s.name),el('span',null,`${s.topics.length} topics`));
+    const tx=el('span','tx');tx.append(el('strong',null,s.name),el('span',null,`${s.topics.filter(x=>!x.unit).length} topics`));
     const ic=el('span','sicon');ic.innerHTML=`<svg viewBox="0 0 24 24" aria-hidden="true">${SICON[s.id]}</svg>`;
     b.append(ic,tx);
     b.onclick=()=>{if(cfg.subject!==s.id){cfg.subject=s.id;cfg.topic=s.topics[0].id}saveCfg();go('stepTopic')};box.append(b)});
@@ -592,7 +592,8 @@ function renderTopics(){
   const s=curSubject(),t=curTopic();cfg.topic=t.id;
   $('subName').textContent=s.name;
   const box=$('topics');box.innerHTML='';
-  s.topics.forEach(tp=>{const b=el('button','row tp');b.type='button';b.id='topic-'+tp.id;b.setAttribute('aria-pressed',tp.id===cfg.topic);
+  {const o=document.getElementById('topTabs');if(o)o.remove();const tb=EduQ.topicTabs&&EduQ.topicTabs(s,t,id=>{cfg.topic=id;saveCfg();renderTopics()});if(tb){tb.id='topTabs';box.before(tb)}}
+  (EduQ.topicsOf?EduQ.topicsOf(s,t):s.topics).forEach(tp=>{const b=el('button','row tp');b.type='button';b.id='topic-'+tp.id;b.setAttribute('aria-pressed',tp.id===cfg.topic);
     const tx=el('span','tx');tx.append(el('strong',null,tp.name),el('span',null,tp.regions&&EduQ.regionLabel?EduQ.regionLabel(EduQ.getRegions(tp.id)):tp.bl));
     const dd=topicDiff(tp),side=el('span','side');
     const bs=getBest(tp.id,dd);if(bs)side.append(el('span','best',`best ${bs}`));
@@ -966,11 +967,11 @@ function resolveGate(g,li){
   g.done=true;asked++;
   g.panels.forEach((p,l)=>p.material.color.set(l===g.correct?0x7dffb8:0x553333));
   if(li===g.correct){
-    right++;streak++;bestStreak=Math.max(bestStreak,streak);
+    right++;lastAns={q:g.img?'This flag':g.q,img:g.img||null,answer:g.answer,picked:g.answer,ok:1,tag:g.tag||null};streak++;bestStreak=Math.max(bestStreak,streak);
     const add=5+(streak>=3?2:0);pts+=add;flash('#5fd39a');S.correct();bump();
     showDelta(`+${add}`,'good');
   }else{
-    streak=0;missed.push({q:g.img?'This flag':g.q,img:g.img,answer:g.answer,picked:g.ans[li]});
+    streak=0;missed.push({q:g.img?'This flag':g.q,img:g.img,answer:g.answer,picked:g.ans[li]});lastAns=Object.assign({},missed[missed.length-1],{ok:0,tag:g.tag||null});
     hearts--;shake=.35;flash('#ff6b5a');S.wrong();showDelta('−1 ♥','bad');
     const hc=$('heartsChip');hc.classList.remove('hit');void hc.offsetWidth;hc.classList.add('hit');
   }
@@ -1002,7 +1003,8 @@ const EMBED=(()=>{const p=new URLSearchParams(location.search);if(!p.get('topic'
   return{topic:p.get('topic'),level:+p.get('level')||0,time:+p.get('time')||0,lock:p.get('lock')==='1'}})();
 /* continents from the portal (class mode); no regions param = all continents */
 const EMBED_REG=EMBED?(EduQ.parseRegions?EduQ.parseRegions(new URLSearchParams(location.search).get('regions'))||EduQ.REGIONS.map(r=>r.id):null):null;
-const toParent=m=>{try{if(window.parent!==window)window.parent.postMessage(m,'*')}catch(e){}};
+let lastAns=null;/* the last answer rides on the next edu-progress, for the portal's mistakes report */
+const toParent=m=>{try{if(m&&m.type==='edu-progress'&&lastAns){m.last=lastAns;lastAns=null}if(window.parent!==window)window.parent.postMessage(m,'*')}catch(e){}};
 function applyEmbed(){if(!EMBED)return false;const s=SUBJECTS.find(s=>s.topics.some(t=>t.id===EMBED.topic));if(!s)return false;
   cfg.subject=s.id;cfg.topic=EMBED.topic;if([1,2,3].includes(EMBED.level))cfg.diffs[EMBED.topic]=EMBED.level;
   if(EMBED.lock){$('againBtn').hidden=true;$('menuBtn').hidden=true;const n=document.createElement('p');n.textContent='Result sent to your teacher.';
