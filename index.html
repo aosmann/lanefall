@@ -923,7 +923,7 @@ function tutorInput(kind){if(state!=='tutor'||tutLock)return;const t=$('tutor');
 function endTutor(){if(state!=='tutor')return;hideGuide();state='run';tickCount(0)}
 let tutorSeen=false;
 function start(){reset(true);panel(null);show('hud',true);show('qbox',false);paintAudio();
-  if(!tutorSeen){tutorSeen=true;showGuide()}else{state='count';countT=3.2;tickCount(3)}}
+  if(!tutorSeen&&!EMBED){tutorSeen=true;showGuide()}else{state='count';countT=3.2;tickCount(3)}}
 function tickCount(n){const c=$('count');c.textContent=n||'Go';c.classList.remove('off','tick');void c.offsetWidth;c.classList.add('tick');S.tick(n);
   if(!n)setTimeout(()=>c.classList.add('off'),600)}
 function toMenu(){hideGuide();reset(false);state='menu';show('hud',false);show('qbox',false);show('count',false);openTopics();panel('menu')}
